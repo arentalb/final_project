@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_app/services/auth_service.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -8,6 +9,9 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  // instancek law servica drwstakain ka bo daxlbwnaw drwstkrdny accounta bo away btwany methodakani bakar bhenin
+  final _auth = AuthService();
+
   //2- ama bo awaya ka rastawxo dastman bgat ab valuey hame filedakan zyatr bas bo validatin bakary ahenin
   // bo nmwna abet useraka email daxlbkat la filedy email , passwordaka la 6 kamtr nabet , la xwarawa zyatr basiakam
   final _formKey = GlobalKey<FormState>();
@@ -20,7 +24,7 @@ class _SignUpPageState extends State<SignUpPage> {
 // 10- lerada ka useraka clicky la aw btna krd la stepy 9 ama run abet
 // ka run bw yakam sht serakat ka bzanet aw nrxanay la input filedaka zyaman krdwa hamwyan tawawn ?
 // amay la regay aw formaawa wa dakat ka la stepy 2 - 3 bom baskrdn
-  void _signUp() {
+  void _signUp() async {
     // alet lam forma currentState hamw valuey hame inputakany laya , functiony validate lasar run akat
     // ka agar hamw inputakan aw validashnay boman danawn wakw stepy 5 wa awany kash agar hamwyan keshayn nabet am true agarenetawa
     // agarish har yakekishian bet keshay tya bet false agarenetawa
@@ -28,11 +32,29 @@ class _SignUpPageState extends State<SignUpPage> {
     if (_formKey.currentState!.validate()) {
       // ama leraya ema request aneryn bo firebase ka userek drwstbkat ba pey aw shtanay kasaka daxli krdwa
       // wa harwaha SnackBarekish drwstakainw pshany ayayn la bashy xwaraway shashaka ka aw namayay tyaya
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('هەژمارەکەت دروست کرا')),
-      );
-      // dway away requestakaman nardw hich keshay tya nabw ema aw userman drwstkrd boya dway awa ema ayxayna pagey login bo away ba asany btwanet daxl bbet
-      Navigator.pushNamed(context, '/signin');
+
+      //xstwmanata try catchawa bo away la katy bangkrdny signin ka xoman nasandwmana , throwy error akain agar hatw aw errorana throw kran awa acheta variably
+      // (e) la catchakaya ka messegy tyaya wa pshany bakarhenarakay ayaynawa
+      try {
+        //ama esta aw functiona bangakain ka bo drwstkrdny user la AuthService aw classay drwstman krdwa ka amash awaiti akain labar away request aneret bo server
+        final user = await _auth.signup(_emailController.text,
+            _passwordController.text, _nameController.text);
+        print(user);
+        // shtek agarenetawa agar hatw useraka tawaw bw 3ayby nabe aygarenetawa ema la user xazny akain
+        // agar hatw keshay hamw nulll agarenetawa
+        if (user != null) {
+          // ka keshay nabet ema ayxayan page home wa messejekishy pshanayayn
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('هەژمارەکەت دروست کرا')),
+          );
+          Navigator.pushNamed(context, '/home');
+        }
+      } catch (e) {
+        // ka keshay habw ema messejekishy pshanayayn
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
     }
   }
 

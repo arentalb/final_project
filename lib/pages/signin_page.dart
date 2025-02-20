@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_app/services/auth_service.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -9,16 +10,29 @@ class SignInPage extends StatefulWidget {
 
 // 1- amash bahamn sheway signup pagekaya
 class _LoginPageState extends State<SignInPage> {
+  final _auth = AuthService();
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _login() {
+  void _login() async {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('چونە ژوورەوە')),
-      );
-      Navigator.pushNamed(context, '/');
+      try {
+        final user =
+            await _auth.signin(_emailController.text, _passwordController.text);
+
+        if (user != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('چونە ژوورەوە بە سەرکەوتویی')),
+          );
+          Navigator.pushNamed(context, '/home');
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
     }
   }
 
