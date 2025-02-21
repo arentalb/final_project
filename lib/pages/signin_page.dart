@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_app/services/auth_service.dart';
+import 'package:forui/forui.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -8,19 +9,24 @@ class SignInPage extends StatefulWidget {
   State<SignInPage> createState() => _LoginPageState();
 }
 
-// 1- amash bahamn sheway signup pagekaya
 class _LoginPageState extends State<SignInPage> {
   final _auth = AuthService();
-
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   void _login() async {
     if (_formKey.currentState!.validate()) {
       try {
         final user =
-            await _auth.signin(_emailController.text, _passwordController.text);
+        await _auth.signin(_emailController.text, _passwordController.text);
 
         if (user != null) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -39,84 +45,116 @@ class _LoginPageState extends State<SignInPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  "بەخێربێیتەوە",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
                 ),
-                const SizedBox(height: 10),
-                const Text(
-                  "تکایە بچۆ ژوورەوە بۆ بەکارهێنانی سیستەم",
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: "ئیمەیل",
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'تکایە ئیمەیلەکەت بنووسە';
-                    }
-                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                      return 'تکایە ئیمەیلەکە بە شێوازی دروست بنووسە';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: "وشەی نهێنی",
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'تکایە وشەی نهێنیەکەت بنووسە';
-                    }
-                    if (value.length < 6) {
-                      return 'وشەی نهێنی پێویستە زیاتر لە ٦ پیت بێت';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _login,
-                    child: const Text("چونە ژوورەوە"),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/signup');
-                  },
-                  child: const Text(
-                    "هەژمار تازە دروست بکە",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 80),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 400),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+
+                              const Text(
+                                "بەخێربێیتەوە",
+                                style: TextStyle(
+                                    fontSize: 24, fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 10),
+                              const Text(
+                                "تکایە بچۆ ژوورەوە بۆ بەکارهێنانی سیستەم",
+                                style: TextStyle(fontSize: 16, color: Colors.grey),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 50),
+                              Form(
+                                key: _formKey,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    FTextField.email(
+                                      controller: _emailController,
+                                      label: const Text("ئیمەیل"),
+                                      hint: 'example@gmail.com',
+                                      maxLines: 1,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'تکایە ئیمەیلەکەت بنووسە';
+                                        }
+                                        if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                            .hasMatch(value)) {
+                                          return 'تکایە ئیمەیلەکە بە شێوازی دروست بنووسە';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    const SizedBox(height: 16),
+
+                                    FTextField.password(
+                                      controller: _passwordController,
+                                      obscureText: true,
+                                      label: const Text("وشەی نهێنی"),
+                                      maxLines: 1,
+                                      hint: '* * * * * * * *',
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'تکایە وشەی نهێنیەکەت بنووسە';
+                                        }
+                                        if (value.length < 6) {
+                                          return 'وشەی نهێنی پێویستە زیاتر لە ٦ پیت بێت';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    const SizedBox(height: 24),
+                                    FButton(
+                                      label: const Text('چونە ژوورەوە'),
+                                      onPress: _login,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text("هەژمارت نیە؟"),
+                                  const SizedBox(width: 5),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.pushNamed(context, '/signup');
+                                    },
+                                    child: const Text(
+                                      "دروستی بکە",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
