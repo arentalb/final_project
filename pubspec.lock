@@ -182,7 +182,7 @@ packages:
     source: hosted
     version: "0.9.1+1"
   forui_assets:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: forui_assets
       sha256: df0f24b47ff0c3e16811bb4ad597b426b8e1a62fcf2fea7d95923ef4d6e8aa2c

@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
       const SnackBar(content: Text('چویتە دەرەوە')),
     );
 
-//dwatr useraka axaynawa pagy signin
+    //dwatr useraka axaynawa pagy signin
     Navigator.pushNamed(context, '/signin');
   }
 
@@ -37,8 +37,7 @@ class _HomePageState extends State<HomePage> {
               Column(
                 children: [
                   Text("یای دی: ${user?.uid}", style: TextStyle(fontSize: 18)),
-                  Text("ئیمەیڵ: ${user?.email}",
-                      style: TextStyle(fontSize: 18)),
+                  Text("ئیمەیڵ: ${user?.email}", style: TextStyle(fontSize: 18)),
                   Text("ناو : ${user?.displayName ?? 'نەناسراو'}",
                       style: TextStyle(fontSize: 18)),
                 ],

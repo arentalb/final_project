@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test_app/pages/home_page.dart';
 import 'package:flutter_test_app/pages/signin_page.dart';
+import 'package:flutter_test_app/services/navigatore.dart';
 
 // ama aw widgeya ka har barnamaka run bu yata naw amawa ka la routy /auth daman nawa
 // ama checky awa akt aya useraka login bwa peshtr ?
@@ -20,9 +21,9 @@ class AuthChecker extends StatelessWidget {
           return const Scaffold(
               body: Center(child: CircularProgressIndicator()));
         }
-        // la snapshota serakat bzanet filedy hasData true a agar true bw awa wata useraka login bwa peshtr boya HomePage agatrenetawa
+        // la snapshota serakat bzanet filedy hasData true a agar true bw awa wata useraka login bwa peshtr boya AppNavigatry pshan ayayn
         if (snapshot.hasData) {
-          return const HomePage();
+          return const AppNavigator();
         }
         // agar na waiting bw na hasData true bw awa dyara useraka login nabwa peshtrw SignInPage agarenetawa
         return const SignInPage();
