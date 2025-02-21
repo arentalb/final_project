@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_app/firebase_options.dart';
-import 'package:flutter_test_app/pages/home_page.dart';
 import 'package:flutter_test_app/pages/signin_page.dart';
 import 'package:flutter_test_app/pages/signup_page.dart';
 import 'package:flutter_test_app/services/navigatore.dart';

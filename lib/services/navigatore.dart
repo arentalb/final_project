@@ -53,19 +53,19 @@ class _AppNavigator extends State<AppNavigator> {
         children: [
           FBottomNavigationBarItem(
             icon: FIcon(FAssets.icons.house),
-            label: const Text('Home'),
+            label: const Text('سەرەکی'),
           ),
           FBottomNavigationBarItem(
             icon: FIcon(FAssets.icons.bookOpen),
-            label: const Text('words'),
+            label: const Text('وشەکان'),
           ),
           FBottomNavigationBarItem(
             icon: FIcon(FAssets.icons.clipboard),
-            label: const Text('quiz'),
+            label: const Text('تاقیکردنەوە'),
           ),
           FBottomNavigationBarItem(
             icon: FIcon(FAssets.icons.user),
-            label: const Text('profile'),
+            label: const Text('هەژمار'),
           ),
 
         ],
