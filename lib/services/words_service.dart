@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test_app/utils/date_utils.dart';
+import 'package:flutter_test_app/models/word.dart';
 
 class WordsService {
   // ama la rey amawa ka wakw away FireAuth nia
   // lera ema esh lagal database akain
   // databasekash ema esh lagal collectiony words akain ka lera "words" yawmana pey
   // wata harkat am varaiably wordsCollection bangkaynawa awa ema datkary datay naw collectiony words akain
-  CollectionReference wordsCollection = FirebaseFirestore.instance.collection('words');
+  CollectionReference wordsCollection =
+      FirebaseFirestore.instance.collection('words');
 
   Future<void> addNewWord(String englishWord, String kurdishWord) async {
     try {
@@ -21,13 +23,13 @@ class WordsService {
         // chenka lentier box wa eshakat
         "nextReviewDate": getDateWithOffset(offsetDays: 1),
         "reviewCount": 0,
-
       });
       print(word);
     } catch (error) {
       print("Failed to add words: $error");
     }
   }
+
   Stream<QuerySnapshot> getTodayWordsStream() {
     final today = DateTime.now();
     final startOfDay = DateTime(today.year, today.month, today.day);
@@ -37,9 +39,21 @@ class WordsService {
     // reviewCount yaksana ba  0
     // nextReviewDate la bayni amrow bayanyaya katakay
     return wordsCollection.snapshots();
-        // .where('reviewCount', isEqualTo: 0)
-        // .where('nextReviewDate', isGreaterThanOrEqualTo: startOfDay)
-        // .where('nextReviewDate', isLessThan: endOfDay)
-        // .snapshots();
+    // .where('reviewCount', isEqualTo: 0)
+    // .where('nextReviewDate', isGreaterThanOrEqualTo: startOfDay)
+    // .where('nextReviewDate', isLessThan: endOfDay)
+    // .snapshots();
+  }
+
+  Future<List<Word>> getTodayQuizWords() async {
+    final snapshot = await wordsCollection.get();
+    return snapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return Word(
+        id: doc.id,
+        englishWord: data['englishWord'] ?? '',
+        kurdishWord: data['kurdishWord'] ?? '',
+      );
+    }).toList();
   }
 }
