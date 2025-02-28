@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test_app/models/word.dart';
 import 'package:flutter_test_app/pages/create_new_word_page.dart';
 import 'package:flutter_test_app/services/words_service.dart';
 import 'package:forui/forui.dart';
@@ -45,7 +46,7 @@ class _WordsPageState extends State<WordsPage> {
               ),
             ),
             Expanded(
-              child: StreamBuilder<QuerySnapshot>(
+              child: StreamBuilder<List<Word>>(
                 stream: _wordService.getWordsStream(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
@@ -55,22 +56,16 @@ class _WordsPageState extends State<WordsPage> {
                     return const Center(child: CircularProgressIndicator());
                   }
 
-                  final docs = snapshot.data?.docs ?? [];
-                  if (docs.isEmpty) {
+                  final words = snapshot.data ?? [];
+                  if (words.isEmpty) {
                     return const Center(child: Text("No words available"));
                   }
 
                   return ListView.builder(
-                    itemCount: docs.length,
+                    itemCount: words.length,
                     itemBuilder: (context, index) {
-                      final data = docs[index].data() as Map<String, dynamic>;
-
-                      final Timestamp? timestamp = data['nextReviewDate'] as Timestamp?;
-                      final formattedDate = timestamp != null
-                          ? DateFormat('dd/MM/yyyy').format(timestamp.toDate())
-                          : '';
-
-                      final int boxNumber = (data['boxNumber'] ?? 0) as int;
+                      final word = words[index];
+                      final formattedDate = DateFormat('dd/MM/yyyy').format(word.nextReviewDate);
 
                       return Card(
                         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -83,11 +78,11 @@ class _WordsPageState extends State<WordsPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    data['kurdishWord'] ?? '',
+                                    word.kurdishWord,
                                     style: const TextStyle(fontSize: 16),
                                   ),
                                   Text(
-                                    data['englishWord'] ?? '',
+                                    word.englishWord,
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -98,20 +93,18 @@ class _WordsPageState extends State<WordsPage> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-
                                   Text(
                                     formattedDate,
                                     style: const TextStyle(fontSize: 12),
                                   ),
                                   const SizedBox(height: 4),
-
                                   Row(
                                     children: List.generate(5, (i) {
                                       final reverseIndex = 4 - i;
                                       return Icon(
                                         Icons.all_inbox,
                                         size: 20,
-                                        color: reverseIndex < boxNumber ? Colors.blue : Colors.grey,
+                                        color: reverseIndex < word.boxNumber ? Colors.blue : Colors.grey,
                                       );
                                     }),
                                   ),
@@ -124,7 +117,7 @@ class _WordsPageState extends State<WordsPage> {
                     },
                   );
                 },
-              ),
+              )
             ),
           ],
         ),

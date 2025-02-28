@@ -30,47 +30,67 @@ class WordsService {
     }
   }
 
-  Stream<QuerySnapshot> getWordsStream() {
+  Stream<List<Word>> getWordsStream() {
     return wordsCollection
-        // .orderBy('boxNumber', descending: false)
-        // .snapshots();
         .orderBy('nextReviewDate', descending: false)
-        .snapshots();
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return Word(
+          id: doc.id,
+          englishWord: data['englishWord'] ?? '',
+          kurdishWord: data['kurdishWord'] ?? '',
+          boxNumber: (data['boxNumber'] as num?)?.toInt() ?? 0,
+          lastReviewed: (data['lastReviewed'] as Timestamp?)?.toDate() ?? DateTime.now(),
+          nextReviewDate: (data['nextReviewDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+          reviewCount: (data['reviewCount'] as num?)?.toInt() ?? 0,
+        );
+      }).toList();
+    });
   }
 
 
-  Future<List<Word>> getWordsThatWeShouldReviewToday() async {
+
+
+  Stream<List<Word>> getWordsToReviewToday() {
     final today = DateTime.now();
     final startOfDay = Timestamp.fromDate(DateTime(today.year, today.month, today.day));
     final endOfDay = Timestamp.fromDate(startOfDay.toDate().add(const Duration(days: 1)));
 
-    final snapshot = await wordsCollection
-        // .where('reviewCount', isEqualTo: 0)
+    return wordsCollection
         .where('nextReviewDate', isGreaterThanOrEqualTo: startOfDay)
         .where('nextReviewDate', isLessThan: endOfDay)
-        .get();
-
-    return snapshot.docs.map((doc) {
-      final data = doc.data() as Map<String, dynamic>;
-      return Word(
-        id: doc.id,
-        englishWord: data['englishWord'] ?? '',
-        kurdishWord: data['kurdishWord'] ?? '',
-      );
-    }).toList();
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return Word(
+          id: doc.id,
+          englishWord: data['englishWord'] ?? '',
+          kurdishWord: data['kurdishWord'] ?? '',
+          boxNumber: (data['boxNumber'] as num?)?.toInt() ?? 0,
+          lastReviewed: (data['lastReviewed'] as Timestamp?)?.toDate() ?? DateTime.now(),
+          nextReviewDate: (data['nextReviewDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+          reviewCount: (data['reviewCount'] as num?)?.toInt() ?? 0,
+        );
+      }).toList();
+    });
   }
-  Future<int> getSizeOfWordsThatWeShouldReviewToday() async {
+
+
+  Stream<int> getSizeOfWordsToReviewToday() {
     final today = DateTime.now();
     final startOfDay = Timestamp.fromDate(DateTime(today.year, today.month, today.day));
     final endOfDay = Timestamp.fromDate(startOfDay.toDate().add(const Duration(days: 1)));
 
-    final snapshot = await wordsCollection
+    return wordsCollection
         .where('reviewCount', isEqualTo: 0)
         .where('nextReviewDate', isGreaterThanOrEqualTo: startOfDay)
         .where('nextReviewDate', isLessThan: endOfDay)
-        .get();
-
-    return snapshot.size;
+        .snapshots()
+        .map((snapshot) => snapshot.size);
   }
+
 
 }

@@ -14,24 +14,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _wordService = WordsService();
-  int todayWordsCount = 0;
-  bool isLoading = true;
-  List<Word> todayWords = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadTodayWordsCount();
-  }
-
-  Future<void> _loadTodayWordsCount() async {
-    final words = await _wordService.getWordsThatWeShouldReviewToday();
-    setState(() {
-      todayWords = words;
-      todayWordsCount = words.length;
-      isLoading = false;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,47 +31,61 @@ class _HomePageState extends State<HomePage> {
                     "تاقی کردنەوەی ئەمڕۆ",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  if (isLoading)
-                    const CircularProgressIndicator()
-                  else
-                    FButton(
-                      onPress: todayWordsCount < 1
-                          ? null
-                          : () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const QuizPage(),
-                          ),
-                        );
-                      },
-                      label: Text(
-                        todayWordsCount < 1
-                            ? "تاقی کردنەوە نیە"
-                            : "دەستپێ کردن ($todayWordsCount)",
-                      ),
-                    ),
+                  StreamBuilder<int>(
+                    stream: _wordService.getSizeOfWordsToReviewToday(),
+                    builder: (context, sizeSnapshot) {
+                      if (sizeSnapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+                      final todayWordsCount = sizeSnapshot.data ?? 0;
+
+                      return FButton(
+                        onPress: todayWordsCount < 1
+                            ? null
+                            : () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const QuizPage(),
+                            ),
+                          );
+                        },
+                        label: Text(
+                          todayWordsCount < 1
+                              ? "تاقی کردنەوە نیە"
+                              : "دەستپێ کردن ($todayWordsCount)",
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
             Expanded(
-              child: isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : todayWords.isEmpty
-                  ? const Center(child: Text("هیچ وشەیەک نیە بۆ ئەمڕۆ"))
-                  : ListView.builder(
-                itemCount: todayWords.length,
-                itemBuilder: (context, index) {
-                  final word = todayWords[index];
-                  final englishWord = word.englishWord ;
-                  final kurdishWord = word.kurdishWord;
+              child: StreamBuilder<List<Word>>(
+                stream: _wordService.getWordsToReviewToday(),
+                builder: (context, wordsSnapshot) {
+                  if (wordsSnapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final todayWords = wordsSnapshot.data ?? [];
 
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    child: FlipCard(
-                      direction: FlipDirection.HORIZONTAL,
-                      front: _buildCard(englishWord, "کلیک بکە بۆ پیشاندانی واتا"),
-                      back: _buildCard(kurdishWord, "بگەڕێوە بۆ وشەکە"),
-                    ),
+                  if (todayWords.isEmpty) {
+                    return const Center(child: Text("هیچ وشەیەک نیە بۆ ئەمڕۆ"));
+                  }
+
+                  return ListView.builder(
+                    itemCount: todayWords.length,
+                    itemBuilder: (context, index) {
+                      final word = todayWords[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: FlipCard(
+                          direction: FlipDirection.HORIZONTAL,
+                          front: _buildCard(word.englishWord, "کلیک بکە بۆ پیشاندانی واتا"),
+                          back: _buildCard(word.kurdishWord, "بگەڕێوە بۆ وشەکە"),
+                        ),
+                      );
+                    },
                   );
                 },
               ),
