@@ -26,7 +26,7 @@ class WordsService {
         'kurdishWord': kurdishWord,
         "boxNumber": 1,
         "lastReviewed": null,
-        "nextReviewDate": getDateWithOffset(offsetDays: 1),
+        "nextReviewDate": getDateWithOffset(),
         "reviewCount": 0,
       });
     } catch (error) {

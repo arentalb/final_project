@@ -155,18 +155,26 @@ class _QuizPageState extends State<QuizPage> {
   void _showResultDialog() {
     List<String> correctWordIds = _quizService.getCorrectWordIds(questions, selectedAnswers, wordsMap);
     List<String> incorrectWordIds = _quizService.getIncorrectWordIds(questions, selectedAnswers, wordsMap);
-
     int score = correctWordIds.length;
 
+    _quizService.submitExam(correctWordIds,incorrectWordIds);
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("نتیجە"),
-        content: Text("تۆ $score لە ${questions.length} دەروونت\nوشە دروستەکان: $correctWordIds\nوشە هەڵەکان: $incorrectWordIds"),
+      builder: (_)=>FDialog(
+        direction: Axis.vertical,
+        title: const Text('تاقیکردنەوەی ئەمڕۆش تەواو'),
+        body:  Text('لە کۆی ${questions.length} توانیت پرسیار ${score} بە دەست بهێنیت '),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst), child: const Text("باشە")),
+          FButton(
+            label: const Text('باش'),
+            onPress: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            },
+          ),
         ],
-      ),
+      )
+
     );
   }
 }
