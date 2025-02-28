@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_app/firebase_options.dart';
 import 'package:flutter_test_app/pages/signin_page.dart';
 import 'package:flutter_test_app/pages/signup_page.dart';
-import 'package:flutter_test_app/services/navigatore.dart';
+import 'package:flutter_test_app/utils/navigatore.dart';
 import 'package:flutter_test_app/utils/auth_checker.dart';
 
 void main() async {
