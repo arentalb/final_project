@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_app/models/word.dart';
 import 'package:flutter_test_app/pages/quiz_page.dart';
 import 'package:flutter_test_app/services/words_service.dart';
 import 'package:forui/forui.dart';
+import 'package:flip_card/flip_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   final _wordService = WordsService();
   int todayWordsCount = 0;
   bool isLoading = true;
+  List<Word> todayWords = [];
 
   @override
   void initState() {
@@ -21,12 +24,11 @@ class _HomePageState extends State<HomePage> {
     _loadTodayWordsCount();
   }
 
-
-
   Future<void> _loadTodayWordsCount() async {
-    final count = await _wordService.getSizeOfWordsThatWeShouldReviewToday();
+    final words = await _wordService.getWordsThatWeShouldReviewToday();
     setState(() {
-      todayWordsCount = count;
+      todayWords = words;
+      todayWordsCount = words.length;
       isLoading = false;
     });
   }
@@ -69,10 +71,54 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            const Expanded(
-              child: Center(
-                child: Text("کایە یەکێک لە تاقیکردنەوەکان هەلبژێرە"),
+            Expanded(
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : todayWords.isEmpty
+                  ? const Center(child: Text("هیچ وشەیەک نیە بۆ ئەمڕۆ"))
+                  : ListView.builder(
+                itemCount: todayWords.length,
+                itemBuilder: (context, index) {
+                  final word = todayWords[index];
+                  final englishWord = word.englishWord ;
+                  final kurdishWord = word.kurdishWord;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: FlipCard(
+                      direction: FlipDirection.HORIZONTAL,
+                      front: _buildCard(englishWord, "کلیک بکە بۆ پیشاندانی واتا"),
+                      back: _buildCard(kurdishWord, "بگەڕێوە بۆ وشەکە"),
+                    ),
+                  );
+                },
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCard(String text, String subtitle) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              text,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
+              textAlign: TextAlign.center,
             ),
           ],
         ),

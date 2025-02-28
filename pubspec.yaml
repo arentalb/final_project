@@ -39,6 +39,7 @@ dependencies:
   forui: ^0.9.1+1
   forui_assets: ^0.9.1
   cloud_firestore: ^5.6.4
+  flip_card: ^0.7.0
 
 dev_dependencies:
   flutter_test:
