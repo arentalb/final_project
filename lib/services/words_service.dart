@@ -58,7 +58,8 @@ class WordsService {
     final startOfDay = Timestamp.fromDate(DateTime(today.year, today.month, today.day));
     final endOfDay = Timestamp.fromDate(startOfDay.toDate().add(const Duration(days: 1)));
 
-    return wordsCollection
+    
+    final wordList =  wordsCollection
         .where('nextReviewDate', isGreaterThanOrEqualTo: startOfDay)
         .where('nextReviewDate', isLessThan: endOfDay)
         .snapshots()
@@ -75,7 +76,11 @@ class WordsService {
           reviewCount: (data['reviewCount'] as num?)?.toInt() ?? 0,
         );
       }).toList();
+      
     });
+    
+
+    return wordList;
   }
 
 
@@ -84,13 +89,17 @@ class WordsService {
     final startOfDay = Timestamp.fromDate(DateTime(today.year, today.month, today.day));
     final endOfDay = Timestamp.fromDate(startOfDay.toDate().add(const Duration(days: 1)));
 
-    return wordsCollection
-        .where('reviewCount', isEqualTo: 0)
+    final wordListSize =  wordsCollection
+        // .where('reviewCount', isEqualTo: 0)
         .where('nextReviewDate', isGreaterThanOrEqualTo: startOfDay)
         .where('nextReviewDate', isLessThan: endOfDay)
         .snapshots()
         .map((snapshot) => snapshot.size);
+
+    return wordListSize;
   }
+
+
 
 
 }
