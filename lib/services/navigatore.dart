@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test_app/pages/home_page.dart';
 import 'package:flutter_test_app/pages/profile_page.dart';
-import 'package:flutter_test_app/pages/quizzes_page.dart';
 import 'package:flutter_test_app/pages/words_page.dart';
 import 'package:forui/forui.dart';
 
@@ -29,7 +28,7 @@ class _AppNavigator extends State<AppNavigator> {
   final List<Widget> pages = [
     HomePage(),
     WordsPage(),
-    QuizzesPage(),
+    // QuizzesPage(),
     ProfilePage(),
   ];
 
@@ -59,10 +58,10 @@ class _AppNavigator extends State<AppNavigator> {
             icon: FIcon(FAssets.icons.bookOpen),
             label: const Text('وشەکان'),
           ),
-          FBottomNavigationBarItem(
-            icon: FIcon(FAssets.icons.clipboard),
-            label: const Text('تاقیکردنەوە'),
-          ),
+          // FBottomNavigationBarItem(
+          //   icon: FIcon(FAssets.icons.clipboard),
+          //   label: const Text('تاقیکردنەوە'),
+          // ),
           FBottomNavigationBarItem(
             icon: FIcon(FAssets.icons.user),
             label: const Text('هەژمار'),

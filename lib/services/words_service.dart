@@ -45,8 +45,17 @@ class WordsService {
     // .snapshots();
   }
 
-  Future<List<Word>> getTodayQuizWords() async {
-    final snapshot = await wordsCollection.get();
+  Future<List<Word>> getWordsThatWeShouldReviewToday() async {
+    final today = DateTime.now();
+    final startOfDay = Timestamp.fromDate(DateTime(today.year, today.month, today.day));
+    final endOfDay = Timestamp.fromDate(startOfDay.toDate().add(const Duration(days: 1)));
+
+    final snapshot = await wordsCollection
+        // .where('reviewCount', isEqualTo: 0)
+        .where('nextReviewDate', isGreaterThanOrEqualTo: startOfDay)
+        .where('nextReviewDate', isLessThan: endOfDay)
+        .get();
+
     return snapshot.docs.map((doc) {
       final data = doc.data() as Map<String, dynamic>;
       return Word(
@@ -56,4 +65,19 @@ class WordsService {
       );
     }).toList();
   }
+  Future<int> getSizeOfWordsThatWeShouldReviewToday() async {
+    final today = DateTime.now();
+    final startOfDay = Timestamp.fromDate(DateTime(today.year, today.month, today.day));
+    final endOfDay = Timestamp.fromDate(startOfDay.toDate().add(const Duration(days: 1)));
+
+    final snapshot = await wordsCollection
+        .where('reviewCount', isEqualTo: 0)
+        .where('nextReviewDate', isGreaterThanOrEqualTo: startOfDay)
+        .where('nextReviewDate', isLessThan: endOfDay)
+        .get();
+
+
+    return snapshot.size;
+  }
+
 }
