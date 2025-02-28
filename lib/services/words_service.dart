@@ -30,20 +30,14 @@ class WordsService {
     }
   }
 
-  Stream<QuerySnapshot> getTodayWordsStream() {
-    final today = DateTime.now();
-    final startOfDay = DateTime(today.year, today.month, today.day);
-    final endOfDay = startOfDay.add(const Duration(days: 1));
-
-    // bo wargrtny aw wshanay amro pewista bixwenet amana bangakaynawa ka amw dwanayn haya :
-    // reviewCount yaksana ba  0
-    // nextReviewDate la bayni amrow bayanyaya katakay
-    return wordsCollection.snapshots();
-    // .where('reviewCount', isEqualTo: 0)
-    // .where('nextReviewDate', isGreaterThanOrEqualTo: startOfDay)
-    // .where('nextReviewDate', isLessThan: endOfDay)
-    // .snapshots();
+  Stream<QuerySnapshot> getWordsStream() {
+    return wordsCollection
+        // .orderBy('boxNumber', descending: false)
+        // .snapshots();
+        .orderBy('nextReviewDate', descending: false)
+        .snapshots();
   }
+
 
   Future<List<Word>> getWordsThatWeShouldReviewToday() async {
     final today = DateTime.now();
@@ -75,7 +69,6 @@ class WordsService {
         .where('nextReviewDate', isGreaterThanOrEqualTo: startOfDay)
         .where('nextReviewDate', isLessThan: endOfDay)
         .get();
-
 
     return snapshot.size;
   }

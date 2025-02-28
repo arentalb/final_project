@@ -21,6 +21,8 @@ class _HomePageState extends State<HomePage> {
     _loadTodayWordsCount();
   }
 
+
+
   Future<void> _loadTodayWordsCount() async {
     final count = await _wordService.getSizeOfWordsThatWeShouldReviewToday();
     setState(() {
@@ -69,7 +71,7 @@ class _HomePageState extends State<HomePage> {
             ),
             const Expanded(
               child: Center(
-                child: Text("تکایە یەکێک لە تاقیکردنەوەکان هەلبژێرە"),
+                child: Text("کایە یەکێک لە تاقیکردنەوەکان هەلبژێرە"),
               ),
             ),
           ],
