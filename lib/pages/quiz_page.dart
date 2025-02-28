@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_test_app/models/quesion.dart';
 import '../models/word.dart';
 import '../services/quiz_service.dart';
 import '../services/words_service.dart';
@@ -15,7 +16,7 @@ class _QuizPageState extends State<QuizPage> {
   final _wordService = WordsService();
   final _quizService = QuizService();
 
-  List<QuizQuestion> questions = [];
+  List<Question> questions = [];
   Map<String, Word> wordsMap = {};
   List<int> selectedAnswers = [];
   int currentQuestionIndex = 0;

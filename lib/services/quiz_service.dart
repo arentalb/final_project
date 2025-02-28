@@ -1,21 +1,12 @@
-import '../models/word.dart';
-class QuizQuestion {
-  final String wordId;
-  final String questionText;
-  final List<String> choices;
+import 'package:flutter_test_app/models/quesion.dart';
 
-  QuizQuestion({
-    required this.wordId,
-    required this.questionText,
-    required this.choices,
-  });
-}
+import '../models/word.dart';
 
 
 class QuizService {
-  List<QuizQuestion> generateQuestions(List<Word> words) {
+  List<Question> generateQuestions(List<Word> words) {
     return words.map((word) {
-      return QuizQuestion(
+      return Question(
         wordId: word.id,
         questionText: word.kurdishWord,
         choices: _getShuffledChoices(word, words),
@@ -34,7 +25,7 @@ class QuizService {
     return choices;
   }
 
-  List<String> getCorrectWordIds(List<QuizQuestion> questions, List<int> selectedAnswers, Map<String, Word> wordsMap) {
+  List<String> getCorrectWordIds(List<Question> questions, List<int> selectedAnswers, Map<String, Word> wordsMap) {
     final correct = <String>[];
 
     for (int i = 0; i < questions.length; i++) {
@@ -48,7 +39,7 @@ class QuizService {
     return correct;
   }
 
-  List<String> getIncorrectWordIds(List<QuizQuestion> questions, List<int> selectedAnswers, Map<String, Word> wordsMap) {
+  List<String> getIncorrectWordIds(List<Question> questions, List<int> selectedAnswers, Map<String, Word> wordsMap) {
     final incorrect = <String>[];
 
     for (int i = 0; i < questions.length; i++) {
