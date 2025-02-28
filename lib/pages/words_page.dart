@@ -58,7 +58,7 @@ class _WordsPageState extends State<WordsPage> {
 
                   final words = snapshot.data ?? [];
                   if (words.isEmpty) {
-                    return const Center(child: Text("No words available"));
+                    return const Center(child: Text("هیچ وشەیەکت نیە بۆ پشاندان"));
                   }
 
                   return ListView.builder(
