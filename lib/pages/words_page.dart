@@ -47,7 +47,7 @@ class _WordsPageState extends State<WordsPage> {
             ),
             Expanded(
               child: StreamBuilder<List<Word>>(
-                stream: _wordService.getWordsStream(),
+                stream: _wordService.getAllWords(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return Center(child: Text('Error: ${snapshot.error}'));
