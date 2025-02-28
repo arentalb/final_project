@@ -13,8 +13,8 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
-  final _wordService = WordsService();
-  final _quizService = QuizService();
+  final WordsService _wordService = WordsService();
+  final QuizService _quizService = QuizService();
 
   List<Question> questions = [];
   Map<String, Word> wordsMap = {};
@@ -27,10 +27,10 @@ class _QuizPageState extends State<QuizPage> {
   @override
   void initState() {
     super.initState();
-    _loadWords();
+    _loadWordsAndGenerateQuiz();
   }
 
-  Future<void> _loadWords() async {
+  Future<void> _loadWordsAndGenerateQuiz() async {
     try {
       final words = await _wordService.getWordsToReviewToday().first;
 
@@ -43,7 +43,7 @@ class _QuizPageState extends State<QuizPage> {
       }
 
       wordsMap = {for (var word in words) word.id: word};
-      questions = _quizService.generateQuestions(words);
+      questions = await _quizService.generateQuestions(words);
       selectedAnswers = List.filled(questions.length, -1);
 
       setState(() {
@@ -90,10 +90,7 @@ class _QuizPageState extends State<QuizPage> {
             children: [
               Text(
                 "پرسیار ${currentQuestionIndex + 1} لە ${questions.length}",
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               Text(
@@ -115,10 +112,7 @@ class _QuizPageState extends State<QuizPage> {
                     ),
                     child: Text(
                       currentQuestion.choices[index],
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: isSelected ? Colors.white : Colors.black,
-                      ),
+                      style: TextStyle(fontSize: 18, color: isSelected ? Colors.white : Colors.black),
                     ),
                   ),
                 );
@@ -168,19 +162,9 @@ class _QuizPageState extends State<QuizPage> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text("نتیجە"),
-        content: Text(
-          "تۆ $score لە ${questions.length} دەروونت\n"
-              "وشە دروستەکان: $correctWordIds\n"
-              "وشە هەڵەکان: $incorrectWordIds",
-        ),
+        content: Text("تۆ $score لە ${questions.length} دەروونت\nوشە دروستەکان: $correctWordIds\nوشە هەڵەکان: $incorrectWordIds"),
         actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-            },
-            child: const Text("باشە"),
-          ),
+          TextButton(onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst), child: const Text("باشە")),
         ],
       ),
     );

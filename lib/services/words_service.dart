@@ -79,4 +79,25 @@ class WordsService {
       );
     }).toList();
   }
+  Future<List<Word>> getRandomWordsExcluding(String excludedWordId, {int count = 3}) async {
+    final snapshot = await _userWordsCollection.get();
+    final allWords = snapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return Word(
+        id: doc.id,
+        englishWord: data['englishWord'] ?? '',
+        kurdishWord: data['kurdishWord'] ?? '',
+        boxNumber: (data['boxNumber'] as num?)?.toInt() ?? 0,
+        lastReviewed: (data['lastReviewed'] as Timestamp?)?.toDate() ?? DateTime.now(),
+        nextReviewDate: (data['nextReviewDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+        reviewCount: (data['reviewCount'] as num?)?.toInt() ?? 0,
+      );
+    }).where((word) => word.id != excludedWordId).toList();
+
+    allWords.shuffle();
+
+    return allWords.take(count).toList();
+  }
+
+
 }

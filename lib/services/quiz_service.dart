@@ -1,28 +1,26 @@
-import 'package:flutter_test_app/models/quesion.dart';
-
+import '../models/quesion.dart';
 import '../models/word.dart';
-
+import 'words_service.dart';
 
 class QuizService {
-  List<Question> generateQuestions(List<Word> words) {
-    return words.map((word) {
-      return Question(
+  final WordsService _wordsService = WordsService();
+
+  Future<List<Question>> generateQuestions(List<Word> words) async {
+    List<Question> questions = [];
+
+    for (var word in words) {
+      final otherWords = await _wordsService.getRandomWordsExcluding(word.id, count: 3);
+      final choices = [word.englishWord, ...otherWords.map((w) => w.englishWord)];
+      choices.shuffle();
+
+      questions.add(Question(
         wordId: word.id,
         questionText: word.kurdishWord,
-        choices: _getShuffledChoices(word, words),
-      );
-    }).toList();
-  }
+        choices: choices,
+      ));
+    }
 
-  List<String> _getShuffledChoices(Word correctWord, List<Word> allWords) {
-    final choices = [correctWord.englishWord];
-
-    allWords.where((w) => w.id != correctWord.id).take(3).forEach((w) {
-      choices.add(w.englishWord);
-    });
-
-    choices.shuffle();
-    return choices;
+    return questions;
   }
 
   List<String> getCorrectWordIds(List<Question> questions, List<int> selectedAnswers, Map<String, Word> wordsMap) {
