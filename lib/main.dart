@@ -4,7 +4,7 @@ import 'package:flutter_test_app/firebase_options.dart';
 import 'package:flutter_test_app/pages/signin_page.dart';
 import 'package:flutter_test_app/pages/signup_page.dart';
 import 'package:flutter_test_app/pages/splash_page.dart';
-import 'package:flutter_test_app/pages/welcome_page.dart';
+import 'package:flutter_test_app/pages/on_boarding_page.dart';
 import 'package:flutter_test_app/utils/navigatore.dart';
 import 'package:flutter_test_app/utils/auth_checker.dart';
 
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       initialRoute: "/splash",
       routes: {
         '/splash': (context) => const SplashPage(),
-        '/welcome': (context) => const WelcomePage(),
+        '/onboarding': (context) => const OnBoardingPage(),
         // aw pagenay hamana ayannasenin , text ka la peshyawa / haya bawaya atwanyt bchina aw page , wa widgey aw pagey ayayne ka fileka xomand drwstman krdwa
         '/navigator': (context) => const Directionality(
             //bo har danayak directionality ayayne bo awa nwsinakan la rastawa bo chap bn (rtl)
