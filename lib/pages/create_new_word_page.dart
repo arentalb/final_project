@@ -57,7 +57,9 @@ class _CreateNewWordPageState extends State<CreateNewWordPage> {
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
+            backgroundColor: Colors.white,
             // amaman la leading danawa wata la saraty headerakaya
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
