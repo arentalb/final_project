@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test_app/models/quesion.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../models/word.dart';
 import '../services/quiz_service.dart';
 import '../services/words_service.dart';
@@ -60,8 +61,12 @@ class _QuizPageState extends State<QuizPage> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      return  Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(child: LoadingAnimationWidget.waveDots(
+            color: Colors.black,
+            size: 25
+        ),),
       );
     }
 

@@ -4,6 +4,7 @@ import 'package:flutter_test_app/pages/quiz_page.dart';
 import 'package:flutter_test_app/services/words_service.dart';
 import 'package:forui/forui.dart';
 import 'package:flip_card/flip_card.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -36,7 +37,10 @@ class _HomePageState extends State<HomePage> {
                     stream: _wordService.getSizeOfWordsToReviewToday(),
                     builder: (context, sizeSnapshot) {
                       if (sizeSnapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
+                        return   LoadingAnimationWidget.waveDots(
+                            color: Colors.black,
+                            size: 25
+                        );
                       }
                       final todayWordsCount = sizeSnapshot.data ?? 0;
 
@@ -99,6 +103,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildCard(String text, String subtitle) {
     return Card(
+      color: Colors.white,
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(

@@ -25,9 +25,9 @@ class _SplashPageState extends State<SplashPage> {
     if (isFirstTime) {
       Navigator.pushReplacementNamed(context, '/onboarding');//onboarding
     } else if (user != null) {
-      Navigator.pushReplacementNamed(context, '/onboarding');//navigator
+      Navigator.pushReplacementNamed(context, '/navigator');//navigator
     } else {
-      Navigator.pushReplacementNamed(context, '/onboarding');//signin
+      Navigator.pushReplacementNamed(context, '/signin');//signin
     }
   }
 

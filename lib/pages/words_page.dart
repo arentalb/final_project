@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_app/models/word.dart';
 import 'package:flutter_test_app/pages/create_new_word_page.dart';
@@ -27,6 +26,7 @@ class _WordsPageState extends State<WordsPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
               child: Row(
+
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
@@ -69,6 +69,7 @@ class _WordsPageState extends State<WordsPage> {
                       final formattedDate = DateFormat('dd/MM/yyyy').format(word.nextReviewDate);
 
                       return Card(
+                        color: Colors.white,
                         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
