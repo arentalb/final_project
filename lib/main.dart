@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_app/firebase_options.dart';
 import 'package:flutter_test_app/pages/signin_page.dart';
 import 'package:flutter_test_app/pages/signup_page.dart';
+import 'package:flutter_test_app/pages/splash_page.dart';
+import 'package:flutter_test_app/pages/welcome_page.dart';
 import 'package:flutter_test_app/utils/navigatore.dart';
 import 'package:flutter_test_app/utils/auth_checker.dart';
 
@@ -21,10 +23,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       //yakam page bo away bcheta sary dway dagyrsany barnamaka
-      initialRoute: "/auth",
+      initialRoute: "/splash",
       routes: {
-        '/auth': (context) =>
-            AuthChecker(), // ama tanha bo awaya ka checky awabkat ka userka logina yan na agar harkamian bw ayneret bo pagekani ka
+        '/splash': (context) => const SplashPage(),
+        '/welcome': (context) => const WelcomePage(),
         // aw pagenay hamana ayannasenin , text ka la peshyawa / haya bawaya atwanyt bchina aw page , wa widgey aw pagey ayayne ka fileka xomand drwstman krdwa
         '/navigator': (context) => const Directionality(
             //bo har danayak directionality ayayne bo awa nwsinakan la rastawa bo chap bn (rtl)

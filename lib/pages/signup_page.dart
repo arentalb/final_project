@@ -56,7 +56,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('هەژمارەکەت دروست کرا')),
           );
-          Navigator.pushNamed(context, '/home');
+          Navigator.pushNamed(context, '/navigator');
         }
       } catch (e) {
         // ka keshay habw ema messejekishy pshanayayn
