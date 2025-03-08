@@ -6,7 +6,6 @@ import 'package:flutter_test_app/pages/signup_page.dart';
 import 'package:flutter_test_app/pages/splash_page.dart';
 import 'package:flutter_test_app/pages/on_boarding_page.dart';
 import 'package:flutter_test_app/utils/app-navigatore.dart';
-import 'package:flutter_test_app/utils/auth_checker.dart';
 
 void main() async {
   // la skaty saratay run buny appaka pewista takid bkretawa ka firebase bataawawaty run bwaw connect bwa
