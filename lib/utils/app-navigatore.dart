@@ -16,9 +16,6 @@ class AppNavigator extends StatefulWidget {
 }
 
 class _AppNavigator extends State<AppNavigator> {
-  final User? user = FirebaseAuth.instance.currentUser;
-
-
   // la regay am variablawa flutter atwanet bzanet ka kam navigation bar item select krawa
   // sarawa nrxakay 0 ra
   int index = 0;
@@ -66,7 +63,6 @@ class _AppNavigator extends State<AppNavigator> {
             icon: FIcon(FAssets.icons.user),
             label: const Text('هەژمار'),
           ),
-
         ],
       ),
     );
