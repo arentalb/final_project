@@ -71,7 +71,6 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -84,118 +83,113 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 80),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 80),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 400),
+                        const Text(
+                          "هەژمار دروست بکە",
+                          style: TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          "زانیاریەکانت بنووسە بۆ دروستکردنی هەژمارەکەت",
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 50),
+                        //3- amaman bakarnahena la jami3a ta esta ama har widgeky taza ka hamw enput filedakanman akaina naw amawa
+                        // am keyaya ayayne bo away bynsenin ka amash aw varaiableaya ka la stepy 2 pem wtn
+                        // ta est ama tanha nasandenty bakarman nahenawa , dwatr petanalem la stepakani ka
+                        Form(
+                          key: _formKey,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text(
-                                "هەژمار دروست بکە",
-                                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center,
+                              // ama ka nwsrawa F la peshyawa ama har wakw text input filedakaya ka la jami3a xwendwmana
+                              // bas awaya ama la packagey 'package:forui/forui.dart'; importman krdwa agar la saraway am file serikayt
+                              // aybynyt ka importman krdwa , ama ka ema rastawxo am packaga bakarahenin wakw waya har awa bkarbenin ka ba defaulty la naw
+                              // fluteraya tanha awaya amayan desigininan bo krdwaw jwanish
+                              FTextField(
+                                controller: _nameController,
+                                label: const Text("ناوی تەواو"),
+                                hint: "ناوت بنووسە",
+                                maxLines: 1,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'تکایە ناوت بنووسە';
+                                  }
+                                  return null;
+                                },
                               ),
-                              const SizedBox(height: 10),
-                              const Text(
-                                "زانیاریەکانت بنووسە بۆ دروستکردنی هەژمارەکەت",
-                                style: TextStyle(fontSize: 16, color: Colors.grey),
-                                textAlign: TextAlign.center,
+                              const SizedBox(height: 16),
+                              // ama wakw wtm law packaga daman bazandwa
+                              // atwanin bo aw filedanay passwordn yan emailn .email yan .password dabnenin bo hane sht ka xoy la pshatawa aykat
+                              FTextField.email(
+                                controller: _emailController,
+                                label: const Text("ئیمەیل"),
+                                hint: 'example@gmail.com',
+                                maxLines: 1,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'تکایە ئیمەیلەکەت بنووسە';
+                                  }
+                                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                      .hasMatch(value)) {
+                                    return 'تکایە ئیمەیلەکە بە شێوازی دروست بنووسە';
+                                  }
+                                  return null;
+                                },
                               ),
-                              const SizedBox(height: 50),
-                              //3- amaman bakarnahena la jami3a ta esta ama har widgeky taza ka hamw enput filedakanman akaina naw amawa
-                              // am keyaya ayayne bo away bynsenin ka amash aw varaiableaya ka la stepy 2 pem wtn
-                              // ta est ama tanha nasandenty bakarman nahenawa , dwatr petanalem la stepakani ka
-                              Form(
-                                key: _formKey,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    // ama ka nwsrawa F la peshyawa ama har wakw text input filedakaya ka la jami3a xwendwmana
-                                    // bas awaya ama la packagey 'package:forui/forui.dart'; importman krdwa agar la saraway am file serikayt
-                                    // aybynyt ka importman krdwa , ama ka ema rastawxo am packaga bakarahenin wakw waya har awa bkarbenin ka ba defaulty la naw
-                                    // fluteraya tanha awaya amayan desigininan bo krdwaw jwanish
-                                    FTextField(
-                                      controller: _nameController,
-                                      label: const Text("ناوی تەواو"),
-                                      hint: "ناوت بنووسە",
-                                      maxLines: 1,
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'تکایە ناوت بنووسە';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                    const SizedBox(height: 16),
-                                    // ama wakw wtm law packaga daman bazandwa
-                                    // atwanin bo aw filedanay passwordn yan emailn .email yan .password dabnenin bo hane sht ka xoy la pshatawa aykat
-                                    FTextField.email(
-                                      controller: _emailController,
-                                      label: const Text("ئیمەیل"),
-                                      hint: 'example@gmail.com',
-                                      maxLines: 1,
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'تکایە ئیمەیلەکەت بنووسە';
-                                        }
-                                        if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                                          return 'تکایە ئیمەیلەکە بە شێوازی دروست بنووسە';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                    const SizedBox(height: 16),
-                                    FTextField.password(
-                                      controller: _passwordController,
-                                      obscureText: true,
-                                      label: const Text("وشەی نهێنی"),
-                                      hint: '* * * * * * * *',
-                                      maxLines: 1,
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'تکایە وشەی نهێنیەکەت بنووسە';
-                                        }
-                                        if (value.length < 6) {
-                                          return 'وشەی نهێنی پێویستە زیاتر لە ٦ پیت بێت';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                    const SizedBox(height: 24),
-                                    // am buttonash bahamn shewa law packaga hatwa
-                                    // harshtek F y pewa bwa wata law packagawa hatwa
-                                    FButton(
-                                      label: const Text('تۆمارکردن'),
-                                      onPress: _signUp,
-                                    ),
-                                  ],
-                                ),
+                              const SizedBox(height: 16),
+                              FTextField.password(
+                                controller: _passwordController,
+                                obscureText: true,
+                                label: const Text("وشەی نهێنی"),
+                                hint: '* * * * * * * *',
+                                maxLines: 1,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'تکایە وشەی نهێنیەکەت بنووسە';
+                                  }
+                                  if (value.length < 6) {
+                                    return 'وشەی نهێنی پێویستە زیاتر لە ٦ پیت بێت';
+                                  }
+                                  return null;
+                                },
                               ),
-                              const SizedBox(height: 30),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Text("پێشتر هەژمارم هەیە؟"),
-                                  const SizedBox(width: 5),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.pushNamed(context, '/signin');
-                                    },
-                                    child: const Text(
-                                      "چونە ژوورەوە",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.blue,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              const SizedBox(height: 24),
+                              // am buttonash bahamn shewa law packaga hatwa
+                              // harshtek F y pewa bwa wata law packagawa hatwa
+                              FButton(
+                                label: const Text('تۆمارکردن'),
+                                onPress: _signUp,
                               ),
                             ],
                           ),
+                        ),
+                        const SizedBox(height: 30),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text("پێشتر هەژمارم هەیە؟"),
+                            const SizedBox(width: 5),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/signin');
+                              },
+                              child: const Text(
+                                "چونە ژوورەوە",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
