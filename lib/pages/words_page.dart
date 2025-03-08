@@ -26,7 +26,6 @@ class _WordsPageState extends State<WordsPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
               child: Row(
-
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
@@ -47,80 +46,84 @@ class _WordsPageState extends State<WordsPage> {
               ),
             ),
             Expanded(
-              child: StreamBuilder<List<Word>>(
-                stream: _wordService.getAllWords(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  }
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+                child: StreamBuilder<List<Word>>(
+              stream: _wordService.getAllWords(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-                  final words = snapshot.data ?? [];
-                  if (words.isEmpty) {
-                    return const Center(child: Text("هیچ وشەیەکت نیە بۆ پشاندان"));
-                  }
+                final words = snapshot.data ?? [];
+                if (words.isEmpty) {
+                  return const Center(
+                      child: Text("هیچ وشەیەکت نیە بۆ پشاندان"));
+                }
 
-                  return ListView.builder(
-                    itemCount: words.length,
-                    itemBuilder: (context, index) {
-                      final word = words[index];
-                      final formattedDate = DateFormat('dd/MM/yyyy').format(word.nextReviewDate);
+                return ListView.builder(
+                  itemCount: words.length,
+                  itemBuilder: (context, index) {
+                    final word = words[index];
+                    final formattedDate =
+                        DateFormat('dd/MM/yyyy').format(word.nextReviewDate);
 
-                      return Card(
-                        color: Colors.white,
-                        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    word.kurdishWord,
-                                    style: const TextStyle(fontSize: 16),
+                    return Card(
+                      color: Colors.white,
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  word.kurdishWord,
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                Text(
+                                  word.englishWord,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  Text(
-                                    word.englishWord,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    formattedDate,
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: List.generate(5, (i) {
-                                      final reverseIndex = 4 - i;
-                                      return Icon(
-                                        Icons.all_inbox,
-                                        size: 20,
-                                        color: reverseIndex < word.boxNumber ? Colors.blue : Colors.grey,
-                                      );
-                                    }),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  formattedDate,
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  children: List.generate(5, (i) {
+                                    final reverseIndex = 4 - i;
+                                    return Icon(
+                                      Icons.all_inbox,
+                                      size: 20,
+                                      color: reverseIndex < word.boxNumber
+                                          ? Colors.blue
+                                          : Colors.grey,
+                                    );
+                                  }),
+                                ),
+                              ],
+                            )
+                          ],
                         ),
-                      );
-                    },
-                  );
-                },
-              )
-            ),
+                      ),
+                    );
+                  },
+                );
+              },
+            )),
           ],
         ),
       ),
