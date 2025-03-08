@@ -29,7 +29,6 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -61,21 +60,19 @@ class _ProfilePageState extends State<ProfilePage> {
             SizedBox(
               height: 12,
             ),
-
-            if (user != null)
-              Padding(padding: EdgeInsets.all(12),
+            Padding(
+              padding: EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Text(" ${user?.displayName}", style: TextStyle(fontSize: 22)),
+                  Text(" ${user?.displayName ?? 'نەناسراو'}",
+                      style: TextStyle(fontSize: 22)),
                   Text("  ${user?.email ?? 'نەناسراو'}",
                       style: TextStyle(fontSize: 14)),
                 ],
-              ),)
-            else
-              Text("هیچ بەکارهێنەرێک نیە", style: TextStyle(fontSize: 14)),
-            const SizedBox(height: 20),
+              ),
+            )
           ],
         ),
       ),
