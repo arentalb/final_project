@@ -20,21 +20,16 @@ class _AppNavigator extends State<AppNavigator> {
   // sarawa nrxakay 0 ra
   int index = 0;
 
-  // away arawa sfr bw lerasah ama listek ka indexy 0 wata yakam dana , wata harkatek hatina naw am widgeawa yakasr yakam danayan run abet
-  // ka awish homw page la foldersy pages daman nawa
-  final List<Widget> pages = [
-    HomePage(),
-    WordsPage(),
-    // QuizzesPage(),
-    ProfilePage(),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
         index: index,
-        children: pages,
+        children: [
+          HomePage(),
+          WordsPage(),
+          ProfilePage(),
+        ],
       ),
       // bo bottom navigation baraka libraray ForUi away peshtr daman bazandbw bo Ui amay haya FBottomNavigationBar , ka sarwshkli jwanaw bakary ahenin emash
 
