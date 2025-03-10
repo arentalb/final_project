@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test_app/utils/date_utils.dart';
 import 'package:flutter_test_app/models/word.dart';
 
@@ -55,19 +56,20 @@ class WordsService {
         .map(_mapSnapshotToWords);
   }
 
-  Stream<int> getSizeOfWordsToReviewToday() {
-    final today = DateTime.now();
-    final startOfDay =
-        Timestamp.fromDate(DateTime(today.year, today.month, today.day));
-    final endOfDay =
-        Timestamp.fromDate(startOfDay.toDate().add(const Duration(days: 1)));
+Future<int> getSizeOfWordsToReviewToday() async {
+  final today = DateTime.now();
+  final startOfDay =
+      Timestamp.fromDate(DateTime(today.year, today.month, today.day));
+  final endOfDay =
+      Timestamp.fromDate(startOfDay.toDate().add(const Duration(days: 1)));
 
-    return _userWordsCollection
-        .where('nextReviewDate', isGreaterThanOrEqualTo: startOfDay)
-        .where('nextReviewDate', isLessThan: endOfDay)
-        .snapshots()
-        .map((snapshot) => snapshot.size);
-  }
+  final snapshot = await _userWordsCollection
+      .where('nextReviewDate', isGreaterThanOrEqualTo: startOfDay)
+      .where('nextReviewDate', isLessThan: endOfDay)
+      .get();
+
+  return snapshot.size; // Return the number of documents found
+}
 
   List<Word> _mapSnapshotToWords(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {

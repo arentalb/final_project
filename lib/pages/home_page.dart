@@ -13,6 +13,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+// HomePage.dart
+
 class _HomePageState extends State<HomePage> {
   final _wordService = WordsService();
 
@@ -33,14 +35,13 @@ class _HomePageState extends State<HomePage> {
                     "تاقی کردنەوەی ئەمڕۆ",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  StreamBuilder<int>(
-                    stream: _wordService.getSizeOfWordsToReviewToday(),
+                  FutureBuilder<int>(
+                    future: _wordService.getSizeOfWordsToReviewToday(),
                     builder: (context, sizeSnapshot) {
-                      if (sizeSnapshot.connectionState == ConnectionState.waiting) {
-                        return   LoadingAnimationWidget.waveDots(
-                            color: Colors.black,
-                            size: 25
-                        );
+                      if (sizeSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return LoadingAnimationWidget.waveDots(
+                            color: Colors.black, size: 25);
                       }
                       final todayWordsCount = sizeSnapshot.data ?? 0;
 
@@ -48,12 +49,12 @@ class _HomePageState extends State<HomePage> {
                         onPress: todayWordsCount < 1
                             ? null
                             : () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const QuizPage(),
-                            ),
-                          );
-                        },
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const QuizPage(),
+                                  ),
+                                );
+                              },
                         label: Text(
                           todayWordsCount < 1
                               ? "تاقی کردنەوە نیە"
@@ -69,7 +70,8 @@ class _HomePageState extends State<HomePage> {
               child: StreamBuilder<List<Word>>(
                 stream: _wordService.getWordsToReviewToday(),
                 builder: (context, wordsSnapshot) {
-                  if (wordsSnapshot.connectionState == ConnectionState.waiting) {
+                  if (wordsSnapshot.connectionState ==
+                      ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
                   final todayWords = wordsSnapshot.data ?? [];
@@ -83,11 +85,14 @@ class _HomePageState extends State<HomePage> {
                     itemBuilder: (context, index) {
                       final word = todayWords[index];
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                         child: FlipCard(
                           direction: FlipDirection.HORIZONTAL,
-                          front: _buildCard(word.englishWord, "کلیک بکە بۆ پیشاندانی واتا"),
-                          back: _buildCard(word.kurdishWord, "بگەڕێوە بۆ وشەکە"),
+                          front: _buildCard(
+                              word.englishWord, "کلیک بکە بۆ پیشاندانی واتا"),
+                          back:
+                              _buildCard(word.kurdishWord, "بگەڕێوە بۆ وشەکە"),
                         ),
                       );
                     },
