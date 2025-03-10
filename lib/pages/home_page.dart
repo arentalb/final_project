@@ -40,8 +40,7 @@ class _HomePageState extends State<HomePage> {
                     builder: (context, sizeSnapshot) {
                       if (sizeSnapshot.connectionState ==
                           ConnectionState.waiting) {
-                        return LoadingAnimationWidget.waveDots(
-                            color: Colors.black, size: 25);
+                        return CircularProgressIndicator();
                       }
                       final todayWordsCount = sizeSnapshot.data ?? 0;
 
