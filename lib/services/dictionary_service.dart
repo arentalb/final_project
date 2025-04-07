@@ -7,17 +7,14 @@ class DictionaryService {
 
   DictionaryService({this.email});
 
-  /// Translate from English to Kurdish (Sorani)
   Future<String> fetchKurdishMeaning(String word) async {
     return _translateAndClean(word, 'en', 'ckb');
   }
 
-  /// Translate from Kurdish (Sorani) to English
   Future<String> fetchEnglishMeaning(String word) async {
     return _translateAndClean(word, 'ckb', 'en');
   }
 
-  /// Core translation method + cleaning step
   Future<String> _translateAndClean(String word, String fromLang, String toLang) async {
     final uri = Uri.parse(
       '$_baseUrl?q=${Uri.encodeComponent(word)}&langpair=$fromLang|$toLang&mt=0${email != null ? '&de=$email' : ''}',
@@ -30,7 +27,12 @@ class DictionaryService {
         final data = json.decode(response.body);
         final rawTranslation = data['responseData']['translatedText'];
 
-        return _cleanTranslation(rawTranslation);
+
+        return rawTranslation
+            .split(RegExp(r'[\s،،؛,;:.؟!?]'))
+            .first
+            .replaceAll(RegExp(r'[^\p{L}]', unicode: true), '')
+            .trim();
       } else {
         return 'No Translation';
       }
@@ -39,12 +41,4 @@ class DictionaryService {
     }
   }
 
-  /// Clean translation to get only the first word, removing punctuation
-  String _cleanTranslation(String input) {
-    return input
-        .split(RegExp(r'[\s،،؛,;:.؟!?]')) // Split on spaces and punctuation
-        .first
-        .replaceAll(RegExp(r'[^\p{L}]', unicode: true), '') // Keep letters only
-        .trim();
-  }
 }

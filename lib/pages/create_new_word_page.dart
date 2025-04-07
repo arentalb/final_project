@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_app/services/dictionary_service.dart';
 import 'package:flutter_test_app/services/words_service.dart';
 import 'package:forui/forui.dart';
-import 'package:http/http.dart' as http;
 
 class ExtractedWord {
   final String kurdish;
@@ -136,7 +134,11 @@ class _CreateNewWordPageState extends State<CreateNewWordPage> {
         Expanded(
           child: FButton(
             label: const Text('زیادکردنی وشە'),
-            onPress: () => setState(() => isBulkMode = false),
+            onPress: () =>{
+              setState(() {
+                isBulkMode = false;
+              })
+            },
             style: isBulkMode ? FButtonStyle.secondary : FButtonStyle.primary,
           ),
         ),
@@ -144,7 +146,11 @@ class _CreateNewWordPageState extends State<CreateNewWordPage> {
         Expanded(
           child: FButton(
             label: const Text('زیادکردنی دەق'),
-            onPress: () => setState(() => isBulkMode = true),
+            onPress: () =>{
+              setState(() {
+                isBulkMode = true;
+              })
+            },
             style: isBulkMode ? FButtonStyle.primary : FButtonStyle.secondary,
           ),
         ),
