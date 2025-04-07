@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test_app/services/auth_service.dart';
+import 'package:flutter_test_app/services/notification_service.dart';
 import 'package:forui/forui.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,15 +15,56 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   User? user = FirebaseAuth.instance.currentUser;
   final _auth = AuthService();
+  TimeOfDay selectedTime = const TimeOfDay(hour: 14, minute: 0); // Default 2 PM
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedTime();
+  }
+
+  Future<void> _loadSavedTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hour = prefs.getInt('notif_hour') ?? 14;
+    final minute = prefs.getInt('notif_minute') ?? 0;
+    setState(() {
+      selectedTime = TimeOfDay(hour: hour, minute: minute);
+    });
+  }
+
+  Future<void> _saveSelectedTime(TimeOfDay time) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('notif_hour', time.hour);
+    await prefs.setInt('notif_minute', time.minute);
+  }
+
+  Future<void> _pickTime() async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+    );
+    if (picked != null && picked != selectedTime) {
+      setState(() {
+        selectedTime = picked;
+      });
+      await _saveSelectedTime(picked);
+
+      await NotificationService.scheduleDailyNotification(
+        hour: picked.hour,
+        minute: picked.minute,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('کاتی ئاگاداری هەڵبژێردرا: ${picked.format(context)}')),
+      );
+    }
+
+  }
 
   void _signOut() async {
-    // ka clikman la btny logout krd awa am functiona run abet useraka akata darawa la appakaw logouty akat ka logicakayman la AuthService danawa methosuy logout lawe
     await _auth.signout();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('چویتە دەرەوە')),
     );
-
-    //dwatr useraka axaynawa pagy signin
     Navigator.pushNamed(context, '/signin');
   }
 
@@ -31,23 +74,18 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   FAvatar.raw(child: const Text('MN')),
                   TextButton(
                     onPressed: _signOut,
                     child: FAvatar.raw(
-                      child: FIcon(
-                        FAssets.icons.arrowLeftToLine,
-                        size: 24,
-                      ),
+                      child: FIcon(FAssets.icons.arrowLeftToLine, size: 24),
                     ),
                   ),
                 ],
@@ -57,22 +95,43 @@ class _ProfilePageState extends State<ProfilePage> {
               decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey, width: 1)),
             ),
-            SizedBox(
-              height: 12,
-            ),
+            const SizedBox(height: 12),
             Padding(
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(" ${user?.displayName ?? 'نەناسراو'}",
-                      style: TextStyle(fontSize: 22)),
+                      style: const TextStyle(fontSize: 22)),
                   Text("  ${user?.email ?? 'نەناسراو'}",
-                      style: TextStyle(fontSize: 14)),
+                      style: const TextStyle(fontSize: 14)),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _pickTime,
+                    child: Text(
+                        'کاتی ئاگادارکردنەوە: ${selectedTime.format(context)}'),
+                  ),
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     NotificationService.scheduleOneMinuteFromNow();
+                  //     ScaffoldMessenger.of(context).showSnackBar(
+                  //       const SnackBar(content: Text("ئاگاداری بۆ ١ خولەک دوای ئێستا دیاری کرا")),
+                  //     );
+                  //   },
+                  //   child: const Text("ئاگاداری تاقی بکە بە ١ خولەک دواوە"),
+                  // ),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      print("Test notification button pressed");
+                      NotificationService.sendTestNotification(); // custom function below
+                    },
+                    child: const Text("تاقی کردنەوەی ئاگاداری"),
+                  ),
+
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

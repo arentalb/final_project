@@ -16,6 +16,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
+
     }
 
     kotlinOptions {
@@ -46,4 +48,13 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // If you already have other dependencies, place the line below alongside them:
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.5"
+
+    // Example of other dependencies you might see:
+    // implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    // implementation 'com.google.firebase:firebase-analytics'
 }
