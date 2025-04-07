@@ -13,118 +13,181 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-// HomePage.dart
-
 class _HomePageState extends State<HomePage> {
   final _wordService = WordsService();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "تاقی کردنەوەی ئەمڕۆ",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  FutureBuilder<int>(
-                    future: _wordService.getSizeOfWordsToReviewToday(),
-                    builder: (context, sizeSnapshot) {
-                      if (sizeSnapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return CircularProgressIndicator();
-                      }
-                      final todayWordsCount = sizeSnapshot.data ?? 0;
-
-                      return FButton(
-                        onPress: todayWordsCount < 1
-                            ? null
-                            : () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => const QuizPage(),
-                                  ),
-                                );
-                              },
-                        label: Text(
-                          todayWordsCount < 1
-                              ? "تاقی کردنەوە نیە"
-                              : "دەستپێ کردن ($todayWordsCount)",
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF02AABD), Color(0xFF00CDAC)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "تاقی کردنەوەی ئەمڕۆ",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                    FutureBuilder<int>(
+                      future: _wordService.getSizeOfWordsToReviewToday(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return LoadingAnimationWidget.inkDrop(
+                            color: Colors.white,
+                            size: 30,
+                          );
+                        }
+                        final todayWordsCount = snapshot.data ?? 0;
+                        return FButton(
+                          onPress: todayWordsCount < 1
+                              ? null
+                              : () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => const QuizPage(),
+                                    ),
+                                  );
+                                },
+                          label: Text(
+                            todayWordsCount < 1
+                                ? "تاقی کردنەوە نیە"
+                                : "دەستپێ کردن ($todayWordsCount)",
+                            style: TextStyle(
+                              color: todayWordsCount < 1
+                                  ? Colors.white
+                                  : Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: StreamBuilder<List<Word>>(
+                  stream: _wordService.getWordsToReviewToday(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: LoadingAnimationWidget.fourRotatingDots(
+                          color: Colors.white,
+                          size: 50,
                         ),
                       );
-                    },
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: StreamBuilder<List<Word>>(
-                stream: _wordService.getWordsToReviewToday(),
-                builder: (context, wordsSnapshot) {
-                  if (wordsSnapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  final todayWords = wordsSnapshot.data ?? [];
+                    }
+                    final todayWords = snapshot.data ?? [];
 
-                  if (todayWords.isEmpty) {
-                    return const Center(child: Text("هیچ وشەیەک نیە بۆ ئەمڕۆ"));
-                  }
-
-                  return ListView.builder(
-                    itemCount: todayWords.length,
-                    itemBuilder: (context, index) {
-                      final word = todayWords[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
-                        child: FlipCard(
-                          direction: FlipDirection.HORIZONTAL,
-                          front: _buildCard(
-                              word.englishWord, "کلیک بکە بۆ پیشاندانی واتا"),
-                          back:
-                              _buildCard(word.kurdishWord, "بگەڕێوە بۆ وشەکە"),
+                    if (todayWords.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          "هیچ وشەیەک نیە بۆ ئەمڕۆ",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
                         ),
                       );
-                    },
-                  );
-                },
+                    }
+
+                    return ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: todayWords.length,
+                      itemBuilder: (context, index) {
+                        final cardKey = GlobalKey<FlipCardState>();
+                        final word = todayWords[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          child: FlipCard(
+                            key: cardKey,
+                            direction: FlipDirection.HORIZONTAL,
+                            front: _buildCard(
+                              text: word.englishWord,
+                              subtitle: "کلیک بکە بۆ پیشاندانی واتا",
+                              backgroundColor: Colors.white,
+                              onFlip: () => cardKey.currentState?.toggleCard(),
+                            ),
+                            back: _buildCard(
+                              text: word.kurdishWord,
+                              subtitle: "بگەڕێوە بۆ وشەکە",
+                              backgroundColor: Colors.white,
+                              onFlip: () => cardKey.currentState?.toggleCard(),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildCard(String text, String subtitle) {
+  Widget _buildCard({
+    required String text,
+    required String subtitle,
+    required Color backgroundColor,
+    required VoidCallback onFlip,
+  }) {
     return Card(
-      color: Colors.white,
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: backgroundColor,
+      elevation: 6,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               text,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(
               subtitle,
-              style: const TextStyle(fontSize: 14, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade600,
+              ),
               textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.center,
+              child: IconButton(
+                onPressed: onFlip,
+                icon: const Icon(Icons.flip_camera_android, size: 28),
+              ),
             ),
           ],
         ),

@@ -54,10 +54,11 @@ class _ProfilePageState extends State<ProfilePage> {
         minute: picked.minute,
       );
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('کاتی ئاگاداری هەڵبژێردرا: ${picked.format(context)}')),
+        SnackBar(
+            content:
+                Text('کاتی ئاگاداری هەڵبژێردرا: ${picked.format(context)}')),
       );
     }
-
   }
 
   void _signOut() async {
@@ -71,70 +72,78 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  FAvatar.raw(child: const Text('MN')),
-                  TextButton(
-                    onPressed: _signOut,
-                    child: FAvatar.raw(
-                      child: FIcon(FAssets.icons.arrowLeftToLine, size: 24),
-                    ),
-                  ),
-                ],
-              ),
+        backgroundColor: Colors.white,
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF02AABD), Color(0xFF00CDAC)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-            Container(
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey, width: 1)),
-            ),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(" ${user?.displayName ?? 'نەناسراو'}",
-                      style: const TextStyle(fontSize: 22)),
-                  Text("  ${user?.email ?? 'نەناسراو'}",
-                      style: const TextStyle(fontSize: 14)),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _pickTime,
-                    child: Text(
-                        'کاتی ئاگادارکردنەوە: ${selectedTime.format(context)}'),
+          ),
+          child: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      FAvatar.raw(child: const Text('MN')),
+                      TextButton(
+                        onPressed: _signOut,
+                        child: FAvatar.raw(
+                          child: FIcon(FAssets.icons.arrowLeftToLine, size: 24),
+                        ),
+                      ),
+                    ],
                   ),
-                  // ElevatedButton(
-                  //   onPressed: () {
-                  //     NotificationService.scheduleOneMinuteFromNow();
-                  //     ScaffoldMessenger.of(context).showSnackBar(
-                  //       const SnackBar(content: Text("ئاگاداری بۆ ١ خولەک دوای ئێستا دیاری کرا")),
-                  //     );
-                  //   },
-                  //   child: const Text("ئاگاداری تاقی بکە بە ١ خولەک دواوە"),
-                  // ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey, width: 1)),
+                ),
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(" ${user?.displayName ?? 'نەناسراو'}",
+                          style: const TextStyle(fontSize: 22)),
+                      Text("  ${user?.email ?? 'نەناسراو'}",
+                          style: const TextStyle(fontSize: 14)),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _pickTime,
+                        child: Text(
+                            'کاتی ئاگادارکردنەوە: ${selectedTime.format(context)}'),
+                      ),
+                      // ElevatedButton(
+                      //   onPressed: () {
+                      //     NotificationService.scheduleOneMinuteFromNow();
+                      //     ScaffoldMessenger.of(context).showSnackBar(
+                      //       const SnackBar(content: Text("ئاگاداری بۆ ١ خولەک دوای ئێستا دیاری کرا")),
+                      //     );
+                      //   },
+                      //   child: const Text("ئاگاداری تاقی بکە بە ١ خولەک دواوە"),
+                      // ),
 
-                  ElevatedButton(
-                    onPressed: () {
-                      print("Test notification button pressed");
-                      NotificationService.sendTestNotification(); // custom function below
-                    },
-                    child: const Text("تاقی کردنەوەی ئاگاداری"),
+                      ElevatedButton(
+                        onPressed: () {
+                          NotificationService
+                              .sendTestNotification(); // custom function below
+                        },
+                        child: const Text("تاقی کردنەوەی ئاگاداری"),
+                      ),
+                    ],
                   ),
-
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }
