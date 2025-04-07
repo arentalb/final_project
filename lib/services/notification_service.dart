@@ -26,8 +26,8 @@ class NotificationService {
   }) async {
     await _notificationsPlugin.zonedSchedule(
       0,
-      'کاتەکە گەیشت!',
-      'کاتەکەی فێرکارییە 🔔',
+      'کاتی سێرکردنە',
+      'کۆمەڵێ وشەت هەیە ئەىێت سەریان بکەیت ئەمڕۆ',
       _nextInstanceOfTime(hour, minute),
       const NotificationDetails(
         android: AndroidNotificationDetails(
