@@ -264,4 +264,41 @@ $extracted
 
     return translated.trim();
   }
+  /// Extract raw text from an image via OCR (without translation).
+  Future<String> extractRawText(Uint8List imageBytes) async {
+    final visionUri = Uri.parse(_visionUrl);
+    final payload = jsonEncode({
+      'requests': [
+        {
+          'image': {'content': base64Encode(imageBytes)},
+          'features': [ {'type': 'TEXT_DETECTION'} ],
+        }
+      ]
+    });
+
+    final response = await _postWithRetry(
+      visionUri,
+      payload,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode != 200) {
+      print('OCR API error: ${response.statusCode} - ${response.body}');
+      throw HttpException(
+        'OCR API error: ${response.statusCode}',
+        uri: visionUri,
+      );
+    }
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    final annotations = (data['responses'] as List)
+        .first['textAnnotations'] as List<dynamic>?;
+    final extracted = annotations?.first['description'] as String?;
+    if (extracted == null || extracted.isEmpty) {
+      print('No text found in image');
+      throw FormatException('No text found in image');
+    }
+    return extracted;
+  }
 }
+
