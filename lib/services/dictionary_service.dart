@@ -1,3 +1,6 @@
+
+
+// lib/services/dictionary_service.dart
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -57,36 +60,64 @@ class DictionaryService {
     }
   }
 
-  /// Perform OCR on an image and translate its full text to Kurdish (Sorani).
-  Future<String> translateImageToKurdish(Uint8List imageBytes) async {
-    try {
-      return await _extractAndTranslateText(
-        imageBytes,
-        from: 'English',
-        to: 'Kurdish (Sorani)',
-      );
-    } catch (e, st) {
-      print('Error in translateImageToKurdish: $e\n$st');
-      rethrow;
-    }
-  }
 
-  /// Perform OCR on an image and translate its full text to English.
-  Future<String> translateImageToEnglish(Uint8List imageBytes) async {
-    try {
-      return await _extractAndTranslateText(
-        imageBytes,
-        from: 'Kurdish (Sorani)',
-        to: 'English',
+
+
+  //────────────────────────────────────────────────────────────────────────────
+  // New: Translate a block of text via Gemini (no OCR)
+  Future<String> translateTextBlock({
+    required String text,
+    required String from,
+    required String to,
+  }) async {
+    final uri = Uri.parse(_geminiUrl);
+    final prompt = '''
+Translate the following text from \$from to \$to:
+
+"""
+\$text
+"""
+Respond with ONLY the translated text.
+''';
+
+    final payload = jsonEncode({
+      'contents': [
+        {
+          'parts': [
+            {'text': prompt.trim()}
+          ],
+        }
+      ],
+      'generationConfig': {
+        'temperature': 0.0,
+        'maxOutputTokens': 512,
+      },
+    });
+
+    final resp = await _postWithRetry(
+      uri,
+      payload,
+      headers: {'Content-Type': 'application/json'},
+    );
+    if (resp.statusCode != 200) {
+      throw HttpException(
+        'Translation API error: \${resp.statusCode} – \${resp.body}',
+        uri: uri,
       );
-    } catch (e, st) {
-      print('Error in translateImageToEnglish: $e\n$st');
-      rethrow;
     }
+
+    final data = jsonDecode(resp.body) as Map<String, dynamic>;
+    final translated = (data['candidates'] as List)
+        .first['content']['parts']
+        .first['text'] as String?;
+    if (translated == null || translated.trim().isEmpty) {
+      throw FormatException('Empty translation for text block');
+    }
+    return translated.trim();
   }
 
   //────────────────────────────────────────────────────────────────────────────
-  // Private HTTP with retry logic for 429
+  // Private HTTP with retry logic
   //────────────────────────────────────────────────────────────────────────────
 
   Future<http.Response> _postWithRetry(
@@ -98,31 +129,9 @@ class DictionaryService {
     http.Response response;
     for (int attempt = 1; attempt <= retries; attempt++) {
       response = await http.post(uri, headers: headers, body: body);
-      if (response.statusCode != 429) {
-        return response;
-      }
-      // Quota exceeded: parse retry info or default to 5s
-      int delayMs = 5000;
-      try {
-        final err = jsonDecode(response.body);
-        final retryInfo = (err['error']['details'] as List?)
-            ?.firstWhere(
-              (d) => d['@type']?.endsWith('RetryInfo') == true,
-          orElse: () => null,
-        );
-        if (retryInfo != null && retryInfo['retryDelay'] is String) {
-          final s = retryInfo['retryDelay'] as String;
-          final match = RegExp(r"(\\d+)([sm])").firstMatch(s);
-          if (match != null) {
-            final value = int.parse(match.group(1)!);
-            delayMs = value * (match.group(2) == 'm' ? 60000 : 1000);
-          }
-        }
-      } catch (_) {}
-      print('Rate limited, retrying in \${delayMs}ms (attempt \$attempt)');
-      await Future.delayed(Duration(milliseconds: delayMs));
+      if (response.statusCode != 429) return response;
+      await Future.delayed(const Duration(seconds: 5));
     }
-    // Final attempt
     return http.post(uri, headers: headers, body: body);
   }
 
@@ -130,7 +139,6 @@ class DictionaryService {
   // Private helpers
   //────────────────────────────────────────────────────────────────────────────
 
-  /// Translates a single word using the Gemini API.
   Future<String> _translateWord(
       String word, {
         required String from,
@@ -183,122 +191,5 @@ Respond with EXACTLY the translated word and NOTHING else.
     return text.trim();
   }
 
-  /// Extracts text from an image via OCR and then translates it.
-  Future<String> _extractAndTranslateText(
-      Uint8List imageBytes, {
-        required String from,
-        required String to,
-      }) async {
-    final visionUri = Uri.parse(_visionUrl);
-    final visionPayload = jsonEncode({
-      'requests': [
-        {
-          'image': {'content': base64Encode(imageBytes)},
-          'features': [
-            {'type': 'TEXT_DETECTION'}
-          ],
-        }
-      ]
-    });
 
-    final visionResp = await _postWithRetry(
-      visionUri,
-      visionPayload,
-      headers: {'Content-Type': 'application/json'},
-    );
-    if (visionResp.statusCode != 200) {
-      print('OCR API error: \${visionResp.statusCode} - \${visionResp.body}');
-      throw HttpException(
-        'OCR API error: \${visionResp.statusCode}',
-        uri: visionUri,
-      );
-    }
-
-    final ocrData = jsonDecode(visionResp.body) as Map<String, dynamic>;
-    final extracted = (ocrData['responses'] as List)
-        .first['textAnnotations']
-        .first['description'] as String?;
-    if (extracted == null || extracted.isEmpty) {
-      print('No text found in image');
-      throw FormatException('No text found in image');
-    }
-
-    final translateUri = Uri.parse(_geminiUrl);
-    final prompt = '''
-Translate the following text from $from to $to:
-"""
-$extracted
-"""
-''';
-    final translatePayload = jsonEncode({
-      'contents': [
-        {
-          'parts': [
-            {'text': prompt.trim()}
-          ],
-        }
-      ]
-    });
-
-    final translateResp = await _postWithRetry(
-      translateUri,
-      translatePayload,
-      headers: {'Content-Type': 'application/json'},
-    );
-    if (translateResp.statusCode != 200) {
-      print('Translation API error: \${translateResp.statusCode} - \${translateResp.body}');
-      throw HttpException(
-        'Translation API error: \${translateResp.statusCode}',
-        uri: translateUri,
-      );
-    }
-
-    final tdata = jsonDecode(translateResp.body) as Map<String, dynamic>;
-    final translated = (tdata['candidates'] as List)
-        .first['content']['parts']
-        .first['text'] as String?;
-    if (translated == null || translated.trim().isEmpty) {
-      print('Empty translated text block');
-      throw FormatException('Empty translated text');
-    }
-
-    return translated.trim();
-  }
-  /// Extract raw text from an image via OCR (without translation).
-  Future<String> extractRawText(Uint8List imageBytes) async {
-    final visionUri = Uri.parse(_visionUrl);
-    final payload = jsonEncode({
-      'requests': [
-        {
-          'image': {'content': base64Encode(imageBytes)},
-          'features': [ {'type': 'TEXT_DETECTION'} ],
-        }
-      ]
-    });
-
-    final response = await _postWithRetry(
-      visionUri,
-      payload,
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    if (response.statusCode != 200) {
-      print('OCR API error: ${response.statusCode} - ${response.body}');
-      throw HttpException(
-        'OCR API error: ${response.statusCode}',
-        uri: visionUri,
-      );
-    }
-
-    final data = jsonDecode(response.body) as Map<String, dynamic>;
-    final annotations = (data['responses'] as List)
-        .first['textAnnotations'] as List<dynamic>?;
-    final extracted = annotations?.first['description'] as String?;
-    if (extracted == null || extracted.isEmpty) {
-      print('No text found in image');
-      throw FormatException('No text found in image');
-    }
-    return extracted;
-  }
 }
-

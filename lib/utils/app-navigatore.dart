@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test_app/pages/extract_word_from_image_page.dart';
+import 'package:flutter_test_app/pages/create_words_from_image_page.dart';
 import 'package:flutter_test_app/pages/home_page.dart';
 import 'package:flutter_test_app/pages/profile_page.dart';
 import 'package:flutter_test_app/pages/words_page.dart';
@@ -28,7 +28,7 @@ class _AppNavigator extends State<AppNavigator> {
         children: [
           HomePage(),
           WordsPage(),
-          CreateFromImagePage(),
+          CreateWordsFromImagePage(),
           ProfilePage(),
         ],
       ),
