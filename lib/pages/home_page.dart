@@ -19,131 +19,122 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF02AABD), Color(0xFF00CDAC)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "تاقی کردنەوەی ئەمڕۆ",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
+      body:SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "تاقی کردنەوەی ئەمڕۆ",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
                     ),
-                    FutureBuilder<int>(
-                      future: _wordService.getSizeOfWordsToReviewToday(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return LoadingAnimationWidget.inkDrop(
-                            color: Colors.white,
-                            size: 30,
-                          );
-                        }
-                        final todayWordsCount = snapshot.data ?? 0;
-                        return FButton(
-                          onPress: todayWordsCount < 1
-                              ? null
-                              : () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => const QuizPage(),
-                                    ),
-                                  );
-                                },
-                          label: Text(
-                            todayWordsCount < 1
-                                ? "تاقی کردنەوە نیە"
-                                : "دەستپێ کردن ($todayWordsCount)",
-                            style: TextStyle(
-                              color: todayWordsCount < 1
-                                  ? Colors.white
-                                  : Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: StreamBuilder<List<Word>>(
-                  stream: _wordService.getWordsToReviewToday(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: LoadingAnimationWidget.fourRotatingDots(
+                  ),
+                  FutureBuilder<int>(
+                    future: _wordService.getSizeOfWordsToReviewToday(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return LoadingAnimationWidget.inkDrop(
                           color: Colors.white,
-                          size: 50,
-                        ),
-                      );
-                    }
-                    final todayWords = snapshot.data ?? [];
-
-                    if (todayWords.isEmpty) {
-                      return const Center(
-                        child: Text(
-                          "هیچ وشەیەک نیە بۆ ئەمڕۆ",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      );
-                    }
-
-                    return ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: todayWords.length,
-                      itemBuilder: (context, index) {
-                        final cardKey = GlobalKey<FlipCardState>();
-                        final word = todayWords[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          child: FlipCard(
-                            key: cardKey,
-                            direction: FlipDirection.HORIZONTAL,
-                            front: _buildCard(
-                              text: word.englishWord,
-                              subtitle: "کلیک بکە بۆ پیشاندانی واتا",
-                              backgroundColor: Colors.white,
-                              onFlip: () => cardKey.currentState?.toggleCard(),
-                            ),
-                            back: _buildCard(
-                              text: word.kurdishWord,
-                              subtitle: "بگەڕێوە بۆ وشەکە",
-                              backgroundColor: Colors.white,
-                              onFlip: () => cardKey.currentState?.toggleCard(),
-                            ),
-                          ),
+                          size: 30,
                         );
-                      },
-                    );
-                  },
-                ),
+                      }
+                      final todayWordsCount = snapshot.data ?? 0;
+                      return FButton(
+                        onPress: todayWordsCount < 1
+                            ? null
+                            : () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const QuizPage(),
+                            ),
+                          );
+                        },
+                        label: Text(
+                          todayWordsCount < 1
+                              ? "تاقی کردنەوە نیە"
+                              : "دەستپێ کردن ($todayWordsCount)",
+                          style: TextStyle(
+                            color: todayWordsCount < 1
+                                ? Colors.white
+                                : Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            Expanded(
+              child: StreamBuilder<List<Word>>(
+                stream: _wordService.getWordsToReviewToday(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: LoadingAnimationWidget.fourRotatingDots(
+                        color: Colors.white,
+                        size: 50,
+                      ),
+                    );
+                  }
+                  final todayWords = snapshot.data ?? [];
+
+                  if (todayWords.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        "هیچ وشەیەک نیە بۆ ئەمڕۆ",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: todayWords.length,
+                    itemBuilder: (context, index) {
+                      final cardKey = GlobalKey<FlipCardState>();
+                      final word = todayWords[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        child: FlipCard(
+                          key: cardKey,
+                          direction: FlipDirection.HORIZONTAL,
+                          front: _buildCard(
+                            text: word.englishWord,
+                            subtitle: "کلیک بکە بۆ پیشاندانی واتا",
+                            backgroundColor: Colors.white,
+                            onFlip: () => cardKey.currentState?.toggleCard(),
+                          ),
+                          back: _buildCard(
+                            text: word.kurdishWord,
+                            subtitle: "بگەڕێوە بۆ وشەکە",
+                            backgroundColor: Colors.white,
+                            onFlip: () => cardKey.currentState?.toggleCard(),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
