@@ -50,7 +50,7 @@ dependencies:
   device_info_plus: ^10.0.1
   image_picker: ^1.1.2
   file_picker: ^10.1.2
-  google_ml_kit: ^0.20.0
+#  google_ml_kit: ^0.20.0
 
 dev_dependencies:
   flutter_test:

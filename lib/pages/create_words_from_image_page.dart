@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
+// import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:forui/forui.dart';
 import 'package:flutter_test_app/services/dictionary_service.dart';
 import 'package:flutter_test_app/services/words_service.dart';
@@ -26,7 +26,7 @@ class CreateWordsFromImagePage extends StatefulWidget {
 
 class _CreateWordsFromImagePageState extends State<CreateWordsFromImagePage> {
   final ImagePicker _picker = ImagePicker();
-  final TextRecognizer _textRecognizer = GoogleMlKit.vision.textRecognizer();
+  // final TextRecognizer _textRecognizer = GoogleMlKit.vision.textRecognizer();
   final DictionaryService _dictionaryService = DictionaryService();
   final WordsService _wordsService = WordsService();
 
@@ -36,7 +36,7 @@ class _CreateWordsFromImagePageState extends State<CreateWordsFromImagePage> {
 
   @override
   void dispose() {
-    _textRecognizer.close();
+    // _textRecognizer.close();
     super.dispose();
   }
 
@@ -90,9 +90,9 @@ class _CreateWordsFromImagePageState extends State<CreateWordsFromImagePage> {
       if (kIsWeb) {
         // rawText = await _dictionaryService.extractText(bytes!);
       } else {
-        final inputImage = InputImage.fromFilePath(path!);
-        final result = await _textRecognizer.processImage(inputImage);
-        rawText = result.text;
+        // final inputImage = InputImage.fromFilePath(path!);
+        // final result = await _textRecognizer.processImage(inputImage);
+        // rawText = result.text;
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
