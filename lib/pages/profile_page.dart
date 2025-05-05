@@ -77,27 +77,9 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Padding(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    FAvatar.raw(child: const Text('MN')),
-                    TextButton(
-                      onPressed: _signOut,
-                      child: FAvatar.raw(
-                        child: FIcon(FAssets.icons.arrowLeftToLine, size: 24),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey, width: 1)),
-              ),
-              const SizedBox(height: 12),
+
+
+              const SizedBox(height: 40),
               Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
@@ -107,10 +89,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: const TextStyle(fontSize: 22)),
                     Text("  ${user?.email ?? 'نەناسراو'}",
                         style: const TextStyle(fontSize: 14)),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _pickTime,
-                      child: Text(
+                    const SizedBox(height: 80),
+                    FButton(
+                      onPress: _pickTime,
+                      label: Text(
                           'کاتی ئاگادارکردنەوە: ${selectedTime.format(context)}'),
                     ),
                     // ElevatedButton(
@@ -123,13 +105,24 @@ class _ProfilePageState extends State<ProfilePage> {
                     //   child: const Text("ئاگاداری تاقی بکە بە ١ خولەک دواوە"),
                     // ),
 
-                    ElevatedButton(
-                      onPressed: () {
+SizedBox(height: 40,),
+                    FButton(
+                      onPress: () {
                         NotificationService
                             .sendTestNotification(); // custom function below
                       },
-                      child: const Text("تاقی کردنەوەی ئاگاداری"),
+                      label: const Text("تاقی کردنەوەی ئاگاداری"),
                     ),
+                    SizedBox(height: 40,),
+                    FButton(
+                      style: FButtonStyle.destructive ,
+
+
+                      onPress:_signOut,
+                      label: const Text(
+                          "رۆشتنە دەرەوە"),
+                    ),
+
                   ],
                 ),
               ),

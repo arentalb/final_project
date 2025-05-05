@@ -18,12 +18,16 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(backgroundColor: Colors.grey[200],
+
       body:SafeArea(
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
+          Container(
+            color: Colors.white,
+            child:   Padding(
               padding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               child: Row(
@@ -34,7 +38,7 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                   FutureBuilder<int>(
@@ -61,7 +65,7 @@ class _HomePageState extends State<HomePage> {
                         label: Text(
                           todayWordsCount < 1
                               ? "تاقی کردنەوە نیە"
-                              : "دەستپێ کردن ($todayWordsCount)",
+                              : " تاقی کردنەوە ($todayWordsCount)",
                           style: TextStyle(
                             color: todayWordsCount < 1
                                 ? Colors.white
@@ -76,6 +80,8 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
+          )
+,
             Expanded(
               child: StreamBuilder<List<Word>>(
                 stream: _wordService.getWordsToReviewToday(),
