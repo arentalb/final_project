@@ -23,7 +23,7 @@ class _CreateNewWordPageState extends State<CreateNewWordPage> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _englishWordController = TextEditingController();
-  final TextEditingController _kurdishWordController = TextEditingController();
+  TextEditingController _kurdishWordController = TextEditingController();
   final TextEditingController _bulkTextController = TextEditingController();
 
   String? _kurdishMeaning;
@@ -134,11 +134,9 @@ class _CreateNewWordPageState extends State<CreateNewWordPage> {
         Expanded(
           child: FButton(
             label: const Text('زیادکردنی وشە'),
-            onPress: () =>{
-              setState(() {
-                isBulkMode = false;
-              })
-            },
+            onPress: () => setState(() {
+              isBulkMode = false;
+            }),
             style: isBulkMode ? FButtonStyle.secondary : FButtonStyle.primary,
           ),
         ),
@@ -146,11 +144,9 @@ class _CreateNewWordPageState extends State<CreateNewWordPage> {
         Expanded(
           child: FButton(
             label: const Text('زیادکردنی دەق'),
-            onPress: () =>{
-              setState(() {
-                isBulkMode = true;
-              })
-            },
+            onPress: () => setState(() {
+              isBulkMode = true;
+            }),
             style: isBulkMode ? FButtonStyle.primary : FButtonStyle.secondary,
           ),
         ),
@@ -164,18 +160,26 @@ class _CreateNewWordPageState extends State<CreateNewWordPage> {
     } else if (_kurdishMeaning == null || _kurdishMeaning!.isEmpty) {
       return const Center(child: Text('هیچ واتایەک نەدۆزرایەوە'));
     } else {
-      return Card(
-        margin: const EdgeInsets.symmetric(vertical: 16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('واتاکان',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Text(_kurdishMeaning!),
-            ],
+      return GestureDetector(
+        onTap: () {
+          setState(() {
+            _kurdishWordController.text = _kurdishMeaning ?? "";
+          });
+        },
+        child: Card(
+          margin: const EdgeInsets.symmetric(vertical: 16),
+          color: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('واتاکان',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Text(_kurdishMeaning!),
+              ],
+            ),
           ),
         ),
       );
@@ -237,9 +241,8 @@ class _CreateNewWordPageState extends State<CreateNewWordPage> {
               margin: const EdgeInsets.symmetric(vertical: 4),
               child: ListTile(
                 title: Text(item.kurdish),
-                subtitle: item.english != null
-                    ? Text(item.english!)
-                    : const Text('...'),
+                subtitle:
+                item.english != null ? Text(item.english!) : const Text('...'),
                 trailing: IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
