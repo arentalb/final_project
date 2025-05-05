@@ -1,20 +1,22 @@
-// lib/pages/create_words_from_image_page.dart
-
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
-// import 'package:google_ml_kit/google_ml_kit.dart';
-import 'package:forui/forui.dart';
-import 'package:flutter_test_app/services/dictionary_service.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:translator/translator.dart';
 import 'package:flutter_test_app/services/words_service.dart';
+import 'package:forui/forui.dart';
 
-/// Holds the original English word and its Kurdish translation
-class ExtractedWord {
-  final String original;
-  String? translation;
-  ExtractedWord(this.original, {this.translation});
+class WordItem {
+  String text;
+  String translation;
+  bool isTranslating;
+  bool isSelected;
+  WordItem({
+    required this.text,
+    this.translation = '',
+    this.isTranslating = true,
+    this.isSelected = false,
+  });
 }
 
 class CreateWordsFromImagePage extends StatefulWidget {
@@ -26,183 +28,219 @@ class CreateWordsFromImagePage extends StatefulWidget {
 
 class _CreateWordsFromImagePageState extends State<CreateWordsFromImagePage> {
   final ImagePicker _picker = ImagePicker();
-  // final TextRecognizer _textRecognizer = GoogleMlKit.vision.textRecognizer();
-  final DictionaryService _dictionaryService = DictionaryService();
+  final TextRecognizer _textRecognizer = TextRecognizer();
+  final GoogleTranslator _translator = GoogleTranslator();
   final WordsService _wordsService = WordsService();
 
   bool _isProcessing = false;
   Uint8List? _imageBytes;
-  List<ExtractedWord> _extractedWords = [];
+  List<WordItem> _items = [];
 
   @override
   void dispose() {
-    // _textRecognizer.close();
+    _textRecognizer.close();
     super.dispose();
   }
 
-  Future<void> _pickImageAndExtract() async {
+  Future<void> _pickImageAndRecognize() async {
     setState(() {
       _isProcessing = true;
       _imageBytes = null;
-      _extractedWords.clear();
+      _items.clear();
     });
 
     Uint8List? bytes;
     String? path;
     try {
-      if (kIsWeb) {
-        final result = await FilePicker.platform.pickFiles(
-          type: FileType.image,
-          withData: true,
-        );
-        if (result == null || result.files.first.bytes == null) {
-          setState(() => _isProcessing = false);
-          return;
-        }
-        bytes = result.files.first.bytes!;
-      } else {
-        final picked = await _picker.pickImage(
-          source: ImageSource.gallery,
-          maxWidth: 1280,
-          maxHeight: 1280,
-          imageQuality: 80,
-        );
-        if (picked == null) {
-          setState(() => _isProcessing = false);
-          return;
-        }
-        path = picked.path;
-        bytes = await picked.readAsBytes();
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('هەڵە لە هەڵبژاردنی وێنە: $e')),
+      final picked = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1280,
+        maxHeight: 1280,
+        imageQuality: 80,
       );
+      if (picked == null) {
+        setState(() => _isProcessing = false);
+        return;
+      }
+      path = picked.path;
+      bytes = await picked.readAsBytes();
+    } catch (e) {
+      debugPrint('Image pick error: $e');
       setState(() => _isProcessing = false);
       return;
     }
 
-    setState(() => _imageBytes = bytes);
+    setState(() {
+      _imageBytes = bytes;
+    });
 
-    // OCR
-    String rawText ="Hello , my name is Ahmad and I am a student";
+    String rawText = '';
     try {
-      if (kIsWeb) {
-        // rawText = await _dictionaryService.extractText(bytes!);
-      } else {
-        // final inputImage = InputImage.fromFilePath(path!);
-        // final result = await _textRecognizer.processImage(inputImage);
-        // rawText = result.text;
-      }
+      final inputImage = InputImage.fromFilePath(path!);
+      final RecognizedText result = await _textRecognizer.processImage(inputImage);
+      rawText = result.text;
+      print('Recognized text: $rawText');
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('هەڵە لە OCR: $e')),
-      );
-      setState(() => _isProcessing = false);
-      return;
+      debugPrint('OCR error: $e');
     }
 
-    if (rawText.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('هیچ دەقێک نەدۆزرایەوە')),
-      );
-      setState(() => _isProcessing = false);
-      return;
+    final words = rawText
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .toSet()
+        .toList();
+
+    setState(() {
+      _items = words.map((w) => WordItem(text: w)).toList();
+      _isProcessing = false;
+    });
+
+    for (var i = 0; i < _items.length; i++) {
+      _translateWord(i);
     }
-
-    //  ➤ Extract English words
-    final regex = RegExp(r'[A-Za-z]+');
-    final matches = regex.allMatches(rawText).map((m) => m.group(0)!).toSet();
-
-    //  ➤ For each English word, fetch Kurdish meaning
-    for (final word in matches) {
-      final item = ExtractedWord(word);
-      setState(() => _extractedWords.add(item));
-
-      try {
-        final kurdish = await _dictionaryService.fetchKurdishMeaning(word);
-        setState(() => item.translation = kurdish);
-      } catch (_) {
-        setState(() => item.translation = null);
-      }
-    }
-
-    setState(() => _isProcessing = false);
   }
 
-  Future<void> _saveAll() async {
-    int successCount = 0;
-    for (final item in _extractedWords) {
-      try {
-        await _wordsService.addNewWord(item.original, item.translation ?? '');
-        successCount++;
-      } catch (_) {}
+  Future<void> _translateWord(int index) async {
+    setState(() => _items[index].isTranslating = true);
+    try {
+      final translation = await _translator.translate(_items[index].text, to: 'ckb');
+      setState(() {
+        _items[index].translation = translation.text;
+      });
+    } catch (e) {
+      debugPrint('Translate error for "${_items[index].text}": $e');
+    } finally {
+      setState(() => _items[index].isTranslating = false);
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$successCount وشە زیاد کران')),
+  }
+
+  Future<bool> _editItemDialog(int index) async {
+    final controllerText = TextEditingController(text: _items[index].text);
+    final controllerTrans = TextEditingController(text: _items[index].translation);
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Word'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: controllerText,
+              decoration: const InputDecoration(labelText: 'English'),
+            ),
+            TextField(
+              controller: controllerTrans,
+              decoration: const InputDecoration(labelText: 'Kurdish'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _items[index].text = controllerText.text;
+                _items[index].translation = controllerTrans.text;
+              });
+              Navigator.pop(context, true);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
     );
-    setState(() {
-      _extractedWords.clear();
-      _imageBytes = null;
-    });
+    return result ?? false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        appBar: AppBar(title: const Text('وەرگرتنی وشە لە وێنە'), centerTitle: true),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              FButton(
-                label: const Text('هەڵبژاردنی وێنە و دۆزینەوە'),
-                onPress: _pickImageAndExtract,
-                style: FButtonStyle.primary,
-              ),
-              const SizedBox(height: 16),
-              if (_isProcessing) const CircularProgressIndicator(),
-              if (_imageBytes != null) ...[
-                const SizedBox(height: 16),
-                Image.memory(_imageBytes!, height: 200),
-              ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('نوسین لە وێنەوە'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            FButton(
+              onPress: _pickImageAndRecognize,
+              label: const Text('وێنەیەک دیاری بکە '),
+            ),
+            const SizedBox(height: 16),
+            if (_isProcessing)
+              const Center(child: CircularProgressIndicator()),
+            if (_imageBytes != null) ...[
+              Image.memory(_imageBytes!, height: 200),
               const SizedBox(height: 16),
               Expanded(
-                child: _extractedWords.isEmpty
-                    ? const Center(child: Text('هیچ وشەیەک نەدۆزرایەوە'))
-                    : ListView.builder(
-                  itemCount: _extractedWords.length,
-                  itemBuilder: (ctx, i) {
-                    final w = _extractedWords[i];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      child: ListTile(
-                        title: Text(w.original),
-                        subtitle: w.translation != null
-                            ? Text(w.translation!)
-                            : const Text('...'),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            setState(() => _extractedWords.removeAt(i));
-                          },
+                child: ListView.builder(
+                  itemCount: _items.length,
+                  itemBuilder: (context, index) {
+                    final item = _items[index];
+                    return Dismissible(
+                      key: UniqueKey(),
+                      direction: DismissDirection.startToEnd,
+                      confirmDismiss: (_) => _editItemDialog(index),
+                      child: Card(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        child: ListTile(
+                          leading: Checkbox(
+                            value: item.isSelected,
+                            onChanged: (checked) {
+                              setState(() {
+                                item.isSelected = checked ?? false;
+                              });
+                            },
+                          ),
+                          title: Text(item.text),
+                          subtitle: item.isTranslating
+                              ? const SizedBox(
+                            height: 16,
+                            width: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                              : Text(item.translation),
                         ),
                       ),
                     );
                   },
                 ),
               ),
-              if (_extractedWords.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                FButton(
-                  label: const Text('زیادکردنی هەموو وشەکان'),
-                  onPress: _saveAll,
-                ),
-              ],
+              const SizedBox(height: 16),
+              FButton(
+                onPress: () async {
+                  int successCount = 0;
+                  for (var item in _items) {
+                    if (item.isSelected) {
+                      // Ensure translation is ready
+                      if (item.translation.isEmpty && !item.isTranslating) {
+                        // find index and translate
+                        final idx = _items.indexOf(item);
+                        await _translateWord(idx);
+                      }
+                      try {
+                        await _wordsService.addNewWord(item.text, item.translation);
+                        successCount++;
+                      } catch (e) {
+                        debugPrint('Failed to save ${item.text}: $e');
+                      }
+                    }
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('وشەکان زیاد کرا')),
+                  );
+                  setState(() {
+                    _items.clear();
+                    _imageBytes = null;
+                  });
+                },
+                label: const Text('زیاد کرا'),
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );
