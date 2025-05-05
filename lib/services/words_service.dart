@@ -87,7 +87,13 @@ Future<int> getSizeOfWordsToReviewToday() async {
       );
     }).toList();
   }
-
+  Future<void> deleteWord(String wordId) async {
+    try {
+      await _userWordsCollection.doc(wordId).delete();
+    } catch (error) {
+      print("Failed to delete word: \$error");
+    }
+  }
   Future<List<Word>> getRandomWordsExcluding(String excludedWordId,
       {int count = 3}) async {
     final snapshot = await _userWordsCollection.get();
