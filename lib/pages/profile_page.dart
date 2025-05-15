@@ -15,7 +15,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   User? user = FirebaseAuth.instance.currentUser;
   final _auth = AuthService();
-  TimeOfDay selectedTime = const TimeOfDay(hour: 14, minute: 0); // Default 2 PM
+  TimeOfDay selectedTime = const TimeOfDay(hour: 14, minute: 0);
 
   @override
   void initState() {
@@ -95,21 +95,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       label: Text(
                           'کاتی ئاگادارکردنەوە: ${selectedTime.format(context)}'),
                     ),
-                    // ElevatedButton(
-                    //   onPressed: () {
-                    //     NotificationService.scheduleOneMinuteFromNow();
-                    //     ScaffoldMessenger.of(context).showSnackBar(
-                    //       const SnackBar(content: Text("ئاگاداری بۆ ١ خولەک دوای ئێستا دیاری کرا")),
-                    //     );
-                    //   },
-                    //   child: const Text("ئاگاداری تاقی بکە بە ١ خولەک دواوە"),
-                    // ),
+
 
 SizedBox(height: 40,),
                     FButton(
                       onPress: () {
                         NotificationService
-                            .sendTestNotification(); // custom function below
+                            .sendTestNotification();
                       },
                       label: const Text("تاقی کردنەوەی ئاگاداری"),
                     ),

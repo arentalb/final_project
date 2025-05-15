@@ -119,9 +119,7 @@ class _WordsPageState extends State<WordsPage> {
                           child: Dismissible(
                             key: Key(word.id),
                             direction: DismissDirection.endToStart,
-                            // Empty background for start-to-end
                             background: Container(),
-                            // Red trash background for end-to-start swipe
                             secondaryBackground: Container(
                               padding: const EdgeInsets.only(left: 20),
                               alignment: Alignment.centerLeft,

@@ -215,9 +215,7 @@ class _CreateWordsFromImagePageState extends State<CreateWordsFromImagePage> {
                   int successCount = 0;
                   for (var item in _items) {
                     if (item.isSelected) {
-                      // Ensure translation is ready
                       if (item.translation.isEmpty && !item.isTranslating) {
-                        // find index and translate
                         final idx = _items.indexOf(item);
                         await _translateWord(idx);
                       }

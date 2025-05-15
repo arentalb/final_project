@@ -32,7 +32,6 @@ class _CreateNewWordPageState extends State<CreateNewWordPage> {
 
   List<ExtractedWord> _extractedWords = [];
 
-  /// Fetch Kurdish meaning from English
   void _fetchWordData(String text) async {
     if (text.isEmpty) return;
     setState(() => _isFetching = true);
@@ -53,7 +52,6 @@ class _CreateNewWordPageState extends State<CreateNewWordPage> {
     }
   }
 
-  /// Save a single word
   void _createNewWord() async {
     if (_formKey.currentState!.validate()) {
       try {
@@ -73,7 +71,6 @@ class _CreateNewWordPageState extends State<CreateNewWordPage> {
     }
   }
 
-  /// Extract words and fetch meanings
   void _extractWordsFromParagraph() async {
     final text = _bulkTextController.text;
     final regex = RegExp(r'[\u0600-\u06FF]+');
@@ -107,7 +104,6 @@ class _CreateNewWordPageState extends State<CreateNewWordPage> {
     }
   }
 
-  /// Save all extracted words
   void _saveExtractedWordsToDatabase() async {
     int successCount = 0;
 

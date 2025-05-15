@@ -90,7 +90,7 @@ class OnBoardingPageState extends State<OnBoardingPage> {
         'تێپەڕێنە',
         style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold),
       ),
-      next: Icon(Icons.arrow_back, color: colorScheme.primary), // In RTL, next points left
+      next: Icon(Icons.arrow_back, color: colorScheme.primary),
       done: Text(
         'دەستپێبکە',
         style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold),

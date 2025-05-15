@@ -32,7 +32,7 @@ class _LoginPageState extends State<SignInPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('چونە ژوورەوە بە سەرکەوتویی')),
           );
-          // dway away basarkawty login bw ema aynerin bo pagey navigator
+
           Navigator.pushNamed(context, '/navigator');
         }
       } catch (e) {

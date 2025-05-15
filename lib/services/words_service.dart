@@ -4,14 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test_app/utils/date_utils.dart';
 import 'package:flutter_test_app/models/word.dart';
 
-//in firebase it stored like this
-// /users/{userId}/words/{wordId}
 
 class WordsService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  /// Helper to get the current user's words collection path
   CollectionReference get _userWordsCollection {
     final user = _auth.currentUser;
     if (user == null) {
@@ -68,7 +65,7 @@ Future<int> getSizeOfWordsToReviewToday() async {
       .where('nextReviewDate', isLessThan: endOfDay)
       .get();
 
-  return snapshot.size; // Return the number of documents found
+  return snapshot.size;
 }
 
   List<Word> _mapSnapshotToWords(QuerySnapshot snapshot) {

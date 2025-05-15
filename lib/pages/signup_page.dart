@@ -9,16 +9,11 @@ class SignUpPage extends StatefulWidget {
   State<SignUpPage> createState() => _SignUpPageState();
 }
 
-// 1- amash bahamn sheway signin pagekaya
 class _SignUpPageState extends State<SignUpPage> {
-  // instancek law servica drwstakain ka bo drwstkrdny account bo away btwany methodakani bakar bhenin
   final _auth = AuthService();
 
-  //2- ama bo awaya ka rastawxo dastman bgat ab valuey hame filedakan zyatr bas bo validatin bakary ahenin
-  // bo nmwna abet useraka email daxlbkat la filedy email , passwordaka la 6 kamtr nabet , la xwarawa zyatr basiakam
   final _formKey = GlobalKey<FormState>();
 
-  //1- amana controllern drwstyanakain bo away btwanyn dastman bgat baw nwsinay ka la har inpt fildeka aynwsin
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -31,35 +26,22 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
-// 10- lerada ka useraka clicky la aw btna krd la stepy 9 ama run abet
-// ka run bw yakam sht serakat ka bzanet aw nrxanay la input filedaka zyaman krdwa hamwyan tawawn ?
-// amay la regay aw formaawa wa dakat ka la stepy 2 - 3 bom baskrdn
-  void _signUp() async {
-    // alet lam forma currentState hamw valuey hame inputakany laya , functiony validate lasar run akat
-    // ka agar hamw inputakan aw validashnay boman danawn wakw stepy 5 wa awany kash agar hamwyan keshayn nabet am true agarenetawa
-    // agarish har yakekishian bet keshay tya bet false agarenetawa
+void _signUp() async {
     if (_formKey.currentState!.validate()) {
-      // ama leraya ema request aneryn bo firebase ka userek drwstbkat ba pey aw shtanay kasaka daxli krdwa
-      // wa harwaha SnackBarekish drwstakainw pshany ayayn la bashy xwaraway shashaka ka aw namayay tyaya
       try {
-        // ama esta aw functiona bangakain ka bo drwstkrdny user la AuthService aw classay drwstman krdwa
         final user = await _auth.signup(
           _emailController.text,
           _passwordController.text,
           _nameController.text,
         );
 
-        // shtek agarenetawa agar hatw useraka tawaw bw 3ayby nabe aygarenetawa ema la user xazny akain
-        // agar hatw keshay hamw nulll agarenetawa
-        if (user != null) {
-          // ka keshay nabet ema ayxayan page home wa messejekishy pshanayayn
+       if (user != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('هەژمارەکەت دروست کرا')),
           );
           Navigator.pushNamed(context, '/navigator');
         }
       } catch (e) {
-        // ka keshay habw ema messejekishy pshanayayn
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.toString())),
         );
@@ -74,8 +56,6 @@ class _SignUpPageState extends State<SignUpPage> {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            // ama bo awaya ka agar hatw shty zorman tya dana la screeny bcheka ama bbet ba scroller wahta btwanret scrolly bkain
-            //tananat la screny gawrasha agar hatw ema keyboardakay xwarawaman krdwa bahoy amawa UI aya jwan darachetw atwanret hamwy bbynin shtakani nawi ba shewayaky scroll
             return SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(
@@ -101,19 +81,12 @@ class _SignUpPageState extends State<SignUpPage> {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 50),
-                        //3- amaman bakarnahena la jami3a ta esta ama har widgeky taza ka hamw enput filedakanman akaina naw amawa
-                        // am keyaya ayayne bo away bynsenin ka amash aw varaiableaya ka la stepy 2 pem wtn
-                        // ta est ama tanha nasandenty bakarman nahenawa , dwatr petanalem la stepakani ka
                         Form(
                           key: _formKey,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              // ama ka nwsrawa F la peshyawa ama har wakw text input filedakaya ka la jami3a xwendwmana
-                              // bas awaya ama la packagey 'package:forui/forui.dart'; importman krdwa agar la saraway am file serikayt
-                              // aybynyt ka importman krdwa , ama ka ema rastawxo am packaga bakarahenin wakw waya har awa bkarbenin ka ba defaulty la naw
-                              // fluteraya tanha awaya amayan desigininan bo krdwaw jwanish
-                              FTextField(
+                             FTextField(
                                 controller: _nameController,
                                 label: const Text("ناوی تەواو"),
                                 hint: "ناوت بنووسە",
@@ -126,9 +99,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 },
                               ),
                               const SizedBox(height: 16),
-                              // ama wakw wtm law packaga daman bazandwa
-                              // atwanin bo aw filedanay passwordn yan emailn .email yan .password dabnenin bo hane sht ka xoy la pshatawa aykat
-                              FTextField.email(
+                             FTextField.email(
                                 controller: _emailController,
                                 label: const Text("ئیمەیل"),
                                 hint: 'example@gmail.com',
@@ -162,9 +133,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 },
                               ),
                               const SizedBox(height: 24),
-                              // am buttonash bahamn shewa law packaga hatwa
-                              // harshtek F y pewa bwa wata law packagawa hatwa
-                              FButton(
+                             FButton(
                                 label: const Text('تۆمارکردن'),
                                 onPress: _signUp,
                               ),

@@ -23,11 +23,11 @@ class _SplashPageState extends State<SplashPage> {
     final user = FirebaseAuth.instance.currentUser;
 
     if (isFirstTime) {
-      Navigator.pushReplacementNamed(context, '/onboarding');//onboarding
+      Navigator.pushReplacementNamed(context, '/onboarding');
     } else if (user != null) {
-      Navigator.pushReplacementNamed(context, '/navigator');//navigator
+      Navigator.pushReplacementNamed(context, '/navigator');
     } else {
-      Navigator.pushReplacementNamed(context, '/signin');//signin
+      Navigator.pushReplacementNamed(context, '/signin');
     }
   }
 

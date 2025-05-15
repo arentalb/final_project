@@ -8,15 +8,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 int _getOffsetForBox(int boxNumber) {
   switch (boxNumber) {
     case 1:
-      return 1; // Tomorrow
+      return 1; // bayani
     case 2:
-      return 3; // After 3 days
+      return 3; // dway 3 rozh
     case 3:
-      return 7; // After a week
+      return 7; // dway haftayak
     case 4:
-      return 14; // After 2 weeks
+      return 14; // dway dw hafta
     case 5:
-      return 30; // After a month
+      return 30; // dway mangek
     default:
       return 30;
   }

@@ -16,7 +16,6 @@ class NotificationService {
 
     await _notificationsPlugin.initialize(initSettings);
 
-    // Setup timezone
     tz.initializeTimeZones();
   }
 
@@ -73,27 +72,5 @@ class NotificationService {
       ),
     );
   }
-// static Future<void> scheduleOneMinuteFromNow() async {
-//   final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-//   final tz.TZDateTime scheduled = now.add(const Duration(minutes: 1));
-//
-//   await _notificationsPlugin.zonedSchedule(
-//     2,
-// 'کاتی سێرکردنە',
-// 'کۆمەڵێ وشەت هەیە ئەىێت سەریان بکەیت ئەمڕۆ',
-//     scheduled,
-//     const NotificationDetails(
-//       android: AndroidNotificationDetails(
-//         'test_channel',
-//         'Test Channel',
-//         channelDescription: 'Channel for test scheduling',
-//         importance: Importance.max,
-//         priority: Priority.high,
-//       ),
-//     ),
-//     androidAllowWhileIdle: true,
-//     uiLocalNotificationDateInterpretation:
-//     UILocalNotificationDateInterpretation.absoluteTime,
-//   );
-// }
+
 }
