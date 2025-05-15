@@ -1,10 +1,13 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:translator/translator.dart';
+import 'package:flutter_test_app/services/dictionary_service.dart';
 import 'package:flutter_test_app/services/words_service.dart';
 import 'package:forui/forui.dart';
+
+
+import 'package:image_picker/image_picker.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+
 
 class WordItem {
   String text;
@@ -29,8 +32,8 @@ class CreateWordsFromImagePage extends StatefulWidget {
 class _CreateWordsFromImagePageState extends State<CreateWordsFromImagePage> {
   final ImagePicker _picker = ImagePicker();
   final TextRecognizer _textRecognizer = TextRecognizer();
-  final GoogleTranslator _translator = GoogleTranslator();
   final WordsService _wordsService = WordsService();
+  final DictionaryService dictionaryService = DictionaryService();
 
   bool _isProcessing = false;
   Uint8List? _imageBytes;
@@ -103,9 +106,9 @@ class _CreateWordsFromImagePageState extends State<CreateWordsFromImagePage> {
   Future<void> _translateWord(int index) async {
     setState(() => _items[index].isTranslating = true);
     try {
-      final translation = await _translator.translate(_items[index].text, to: 'ckb');
+      final translation = await dictionaryService.fetchKurdishMeaning(_items[index].text);
       setState(() {
-        _items[index].translation = translation.text;
+        _items[index].translation = translation;
       });
     } catch (e) {
       debugPrint('Translate error for "${_items[index].text}": $e');
@@ -235,7 +238,7 @@ class _CreateWordsFromImagePageState extends State<CreateWordsFromImagePage> {
                     _imageBytes = null;
                   });
                 },
-                label: const Text('زیاد کرا'),
+                label: const Text('زیاد بکە'),
               ),
             ],
           ],
